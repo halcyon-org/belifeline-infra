@@ -2,8 +2,8 @@
 
 ## Prerequisites
 
-1. In a networked environment`. /pre.sh` in a networked environment.
-2. Copy this repository to the usb drive.
+1. Clone this repository in the usb drive.
+2. In a networked environment`. /pre.sh` in a networked environment.
 
 ## Installation
 
