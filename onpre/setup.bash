@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-./proxmox.bash
-./network.bash
-./vpn.bash
+./setup/proxmox.bash
+./setup/network.bash
+./setup/vpn.bash
