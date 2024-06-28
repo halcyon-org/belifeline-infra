@@ -1,9 +1,26 @@
 #!/bin/sh
 set -e
 
+if [ $# -gt 0 ]; then
+  NIC=$1
+else
+  if [ -z "$NIC" ]; then
+    read -p "Please enter the NIC: " NIC
+  fi
+fi
+
+if [ $# -gt 0 ]; then
+  VPN_DOMAIN=$2
+else
+  if [ -z "$VPN_DOMAIN" ]; then
+    read -p "Please enter the VPN domain: " VPN_DOMAIN
+  fi
+fi
+
+
 dhclient vpn_vpnnic
 
-MY_IP=$(ip addr show eth0 | grep inet | awk '{print $2}' | awk -F/ '{print $1}' | head -n 1)
+MY_IP=$(ip addr show enp2s0 | grep inet | awk '{print $2}' | awk -F/ '{print $1}' | head -n 1)
 MY_GW=$(ip route | grep default | awk '{print $3}')
 MY_TOP_IP=$(echo $MY_IP | awk -F. '{print $1".0.0.0/8"}')
 VPN_IP=$(ip addr show vpn_vpnnic | grep inet | awk '{print $2}' | awk -F/ '{print $1}' | head -n 1)

@@ -1,5 +1,4 @@
 #!/bin/sh
-set -e
 
 if [ $# -gt 0 ]; then
   VPN_DOMAIN=$1
@@ -10,6 +9,8 @@ else
 fi
 
 cat ./scripts/install/interfaces > /etc/network/interfaces.d/vpn_vpnnic
+ifdown vpn_vpnnic
+ifup vpn_vpnnic
 
 (
     while true; do
