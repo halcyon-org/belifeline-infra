@@ -9,7 +9,7 @@ else
   fi
 fi
 
-cat ./scripts/install/interfaces >> /etc/network/interfaces
+cat ./scripts/install/interfaces > /etc/network/interfaces.d/vpn_vpnnic
 
 (
     while true; do
