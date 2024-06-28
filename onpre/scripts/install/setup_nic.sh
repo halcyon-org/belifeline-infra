@@ -9,6 +9,8 @@ else
   fi
 fi
 
+cat ./scripts/install/interfaces >> /etc/network/interfaces
+
 (
     while true; do
         if ip link show vpn_vpnnic > /dev/null 2>&1; then
