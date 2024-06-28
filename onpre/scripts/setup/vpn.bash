@@ -2,6 +2,11 @@
 
 # set -euo pipefail
 
+if [[ -z "$VPN_PASSWORD" ]]; then
+  echo 'Password for VPN is not set'
+  exit 1
+fi
+
 export PATH="/usr/local/bin:$PATH"
 
 echo '## Create VPN settings'
