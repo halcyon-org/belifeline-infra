@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 VPN_DOMAIN=vpn.example.com
 

@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 if [ $# -gt 0 ]; then
   VPN_DOMAIN=$1
@@ -19,8 +20,9 @@ fi
 ) &
 NIC_SETUP_PID=$!
 
+exec /usr/local/bin/vpnclient stop
 exec /usr/local/bin/vpnclient start
 
 wait $NIC_SETUP_PID
 
-exec /usr/local/bin/vpnclient start
+exec /usr/local/bin/vpnclient stop

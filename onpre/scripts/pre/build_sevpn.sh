@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 docker build sevpn -t debian-sevpn
 docker run --detach --rm --name debian-sevpn debian-sevpn
