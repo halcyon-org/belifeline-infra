@@ -1,5 +1,5 @@
-#!/bin/sh
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
 docker build sevpn -t debian-sevpn
 docker run --detach --rm --name debian-sevpn debian-sevpn

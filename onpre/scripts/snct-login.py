@@ -84,7 +84,7 @@ def getForm(url=URL):
             time.sleep(1)
 
     printMessage("cannot open the authentication page. give up.")
-    sys.exit()
+    sys.exit(1)
 
 
 def getTagValue(html):
