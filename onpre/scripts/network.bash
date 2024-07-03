@@ -2,6 +2,17 @@
 
 set -euo pipefail
 
+if (! ping -c 1 10.10.10.10); then
+  cat <<EOM
+
+## Can't connect to 10.10.10.10
+   Down and up the enp2s0
+EOM
+
+  ifdown enp2s0
+  ifup enp2s0
+fi
+
 dhclient enp2s0
 
 if (ip a show enp2s0 | grep -E '172.16.2'); then
