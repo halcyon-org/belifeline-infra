@@ -18,6 +18,16 @@ cat <<EOM
 ## Create VPN settings
 EOM
 
+vpnclient stop || :
+VPN_CONFIG='/usr/local/bin/vpn_client.config'
+if [[ -f "$VPN_CONFIG" ]]; then
+  read -rp 'Delete the config? [y/N] ' REMOVE_CONFIG
+  if [[ "$REMOVE_CONFIG" =~ ^[yY]([eE][sS])?$ ]]; then
+    rm "$VPN_CONFIG"
+  fi
+fi
+vpnclient start
+
 vpncmd /CLIENT localhost /CMD NicCreate VPNNIC
 vpncmd /CLIENT localhost /CMD AccountCreate vpn_connection /SERVER:"$VPN_DOMAIN":443 /USERNAME:"$VPN_USERNAME" /HUB:VPN /NICNAME:VPNNIC
 vpncmd /CLIENT localhost /CMD AccountPasswordSet vpn_connection /PASSWORD "$VPN_PASSWORD" /TYPE:standard
