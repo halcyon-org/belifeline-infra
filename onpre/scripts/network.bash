@@ -11,7 +11,7 @@ fi
 if (ip a show enp2s0 | grep -E '10\.[0-9]+\.[0-9]+\.[0-9]+'); then
   echo '## Connect to the SNCT network'
   read -rp 'SNCT network user name: ' NETWORK_USERNAME
-  python3 scripts/setup/snct-login.py "$NETWORK_USERNAME"
+  python3 scripts/snct-login.py "$NETWORK_USERNAME"
   while (ip a show enp2s0 | grep -E '10\.[0-9]+\.[0-9]+\.[0-9]+'); do
     sleep 1
   done
