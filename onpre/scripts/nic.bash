@@ -27,10 +27,20 @@ checknic() {
   echo "nameserver $VPN_GW" >/etc/resolv.conf
 }
 
+cat <<EOM
+
+## Copy the vpn_vpnnic interface
+EOM
+
 cat ./scripts/interfaces >/etc/network/interfaces.d/vpn_vpnnic
 
 vpnclient stop || :
 vpnclient start
+
+cat <<EOM
+
+## Try connecting to the VPN
+EOM
 
 while true; do
   if ip link show vpn_vpnnic &>/dev/null; then

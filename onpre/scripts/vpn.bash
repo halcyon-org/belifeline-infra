@@ -5,11 +5,19 @@ set -euo pipefail
 : "$VPN_USERNAME" "$VPN_PASSWORD" "$VPN_DOMAIN"
 export PATH="/usr/local/bin:$PATH"
 
-echo '## Copy the VPN commands'
+cat <<EOM
+
+## Copy the VPN commands
+EOM
+
 mkdir -p /usr/local/bin/
 cp dist/* /usr/local/bin/ || :
 
-echo '## Create VPN settings'
+cat <<EOM
+
+## Create VPN settings
+EOM
+
 vpncmd /CLIENT localhost /CMD NicCreate VPNNIC
 vpncmd /CLIENT localhost /CMD AccountCreate vpn_connection /SERVER:"$VPN_DOMAIN":443 /USERNAME:"$VPN_USERNAME" /HUB:VPN /NICNAME:VPNNIC
 vpncmd /CLIENT localhost /CMD AccountPasswordSet vpn_connection /PASSWORD "$VPN_PASSWORD" /TYPE:standard
