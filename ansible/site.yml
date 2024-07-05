@@ -1,2 +1,3 @@
 ---
-- import_playbook: vpnep.yml
+- name: VPNEP
+  import_playbook: vpnep.yml

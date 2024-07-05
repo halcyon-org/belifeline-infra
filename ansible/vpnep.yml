@@ -1,3 +1,10 @@
 ---
-- hosts: vpnep
+- name: VPNEP
+  hosts: vpnep
   roles:
+    - role: fail2ban
+      tags:
+        - fail2ban
+    - role: docker
+      tags:
+        - docker

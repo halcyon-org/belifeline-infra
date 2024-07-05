@@ -12,6 +12,11 @@ setup:
   @if ! {{path_exists("ansible/group_vars")}}; then \
     cd ansible && ln -s ../private/ansible/group_vars group_vars; \
   fi
+  @if ! {{path_exists("ansible/roles/fail2ban/templates")}}; then \
+    cd ansible/roles/fail2ban && ln -s ../../../private/ansible/roles/fail2ban/templates templates; \
+  fi
+
+  cd ansible && ansible-galaxy install -r requirements.yml
 
 auth:
   ssh -T -F ansible/ssh_config ansible_user@halcyon-srv.shiron.dev
