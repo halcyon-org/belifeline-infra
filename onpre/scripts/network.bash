@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-if (! ping -c 1 10.10.10.10); then
+if (! ping -c 1 10.10.10.10 -W 1); then
   cat <<EOM
 
 ## Can't connect to 10.10.10.10
