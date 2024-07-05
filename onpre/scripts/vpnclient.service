@@ -1,0 +1,14 @@
+[Unit]
+Description = vpnserver daemon
+
+[Service]
+WorkingDirectory = /usr/local/bin/
+ExecStart = /usr/local/bin/vpnclient start
+ExecStop = /usr/local/bin/vpnclient stop
+ExecReload = /usr/local/bin/vpnclient restart
+Restart = always
+User = root
+Type = forking
+
+[Install]
+WantedBy = multi-user.target

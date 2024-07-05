@@ -34,8 +34,7 @@ EOM
 
 cat ./scripts/interfaces >/etc/network/interfaces.d/vpn_vpnnic
 
-vpnclient stop || :
-vpnclient start
+systemctl vpnclient restart
 
 cat <<EOM
 
@@ -51,4 +50,4 @@ while true; do
   sleep 1
 done
 
-vpnclient stop
+systemctl vpnclient stop
