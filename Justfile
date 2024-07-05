@@ -17,13 +17,16 @@ auth:
   ssh -T -F ansible/ssh_config ansible_user@halcyon-srv.shiron.dev
 
 ansible opt=ansible_default_opt: setup
-  cd ansible && ansible-playbook -i hosts.yml site.yml -C {{opt}}
+  cd ansible && ansible-playbook site.yml -C {{opt}}
 
 ansible-run opt=ansible_default_opt: setup
-  cd ansible && ansible-playbook -i hosts.yml site.yml {{opt}}
+  cd ansible && ansible-playbook site.yml {{opt}}
 
-ansible-lint:
-  ansible-lint ansible
+lint:
+  cd ansible && ansible-lint
+
+lint-fix:
+  cd ansible && ansible-lint --fix
 
 private-gen:
   cd private && just gen

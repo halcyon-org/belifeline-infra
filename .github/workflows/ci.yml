@@ -20,4 +20,4 @@ jobs:
           level: warning
 
       - name: Run ansible-lint
-        uses: ansible/ansible-lint-action@v26.4.1
+        uses: ansible/ansible-lint@v24.6.1
