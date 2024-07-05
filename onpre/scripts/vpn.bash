@@ -21,7 +21,7 @@ cat <<EOM
 ## Create VPN settings
 EOM
 
-systemctl vpnclient stop
+systemctl stop vpnclient
 VPN_CONFIG='/usr/local/bin/vpn_client.config'
 if [[ -f "$VPN_CONFIG" ]]; then
   read -rp 'Delete the config? [y/N] ' REMOVE_CONFIG
@@ -29,7 +29,7 @@ if [[ -f "$VPN_CONFIG" ]]; then
     rm "$VPN_CONFIG"
   fi
 fi
-systemctl vpnclient start
+systemctl start vpnclient
 
 vpncmd /CLIENT localhost /CMD NicCreate VPNNIC
 vpncmd /CLIENT localhost /CMD AccountCreate vpn_connection /SERVER:"$VPN_DOMAIN":443 /USERNAME:"$VPN_USERNAME" /HUB:VPN /NICNAME:VPNNIC
