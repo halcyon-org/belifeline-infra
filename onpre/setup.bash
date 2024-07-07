@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+DEFAULT_NIC=$(ip a | grep "master vmbr0" | awk '{print substr($2, 1 , length($2)-1)}')
+export DEFAULT_NIC
+echo "DEFAULT_NIC: $DEFAULT_NIC"
+
 cat <<EOM
 
 

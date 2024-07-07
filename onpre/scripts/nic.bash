@@ -7,7 +7,7 @@ export PATH="/usr/local/bin:$PATH"
 
 checknic() {
   dhclient "$NIC"
-  MY_IP=$(ip addr show enp2s0 | grep inet | awk '{print $2}' | awk -F/ '{print $1}' | head -n 1)
+  MY_IP=$(ip addr show "$DEFAULT_NIC" | grep inet | awk '{print $2}' | awk -F/ '{print $1}' | head -n 1)
   MY_GW=$(ip route | grep default | awk '{print $3}')
   MY_TOP_IP=$(echo "$MY_IP" | awk -F. '{print $1".0.0.0/8"}')
   VPN_IP=$(ip addr show vpn_vpnnic | grep inet | awk '{print $2}' | awk -F/ '{print $1}' | head -n 1)
