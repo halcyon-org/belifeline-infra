@@ -10,8 +10,13 @@ cat <<EOM
 ## Copy the VPN commands
 EOM
 
+dpkg -i dist/*.deb
+
 mkdir -p /usr/local/bin/
-cp dist/* /usr/local/bin/ || :
+cp dist/vpnclient /usr/local/bin/
+cp dist/vpncmd /usr/local/bin/
+cp dist/hamcore.se2 /usr/local/bin/
+cp dist/*.so /usr/local/bin/
 
 cp scripts/vpnclient.service /etc/systemd/system/vpnclient.service
 systemctl daemon-reload
