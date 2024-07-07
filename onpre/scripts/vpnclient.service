@@ -9,6 +9,7 @@ ExecReload = /usr/local/bin/vpnclient restart
 Restart = always
 User = root
 Type = forking
+Environment = LD_LIBRARY_PATH=/usr/local/bin/
 
 [Install]
 WantedBy = multi-user.target
