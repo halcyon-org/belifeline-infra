@@ -2,11 +2,13 @@
 
 set -euo pipefail
 
-: "$NIC" "$VPN_DOMAIN"
+: "$VPN_DOMAIN"
 export PATH="/usr/local/bin:$PATH"
-
+export LD_LIBRARY_PATH="/usr/local/bin/"
+# TODO: vmbrを経由して通信させないといけないので、vmbrとvpn_vpnnicをつなげる。&vpn hostは物理nicを経由させるというルーティング
+# TODO: interfaesにいれる(上記の通りだと、ルーティングが簡単になるので入れられるはず)
 checknic() {
-  dhclient "$NIC"
+  dhclient vpn_vpnnic
   MY_IP=$(ip addr show "$DEFAULT_NIC" | grep inet | awk '{print $2}' | awk -F/ '{print $1}' | head -n 1)
   MY_GW=$(ip route | grep default | awk '{print $3}')
   MY_TOP_IP=$(echo "$MY_IP" | awk -F. '{print $1".0.0.0/8"}')

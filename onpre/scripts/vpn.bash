@@ -4,11 +4,14 @@ set -euo pipefail
 
 : "$VPN_USERNAME" "$VPN_PASSWORD" "$VPN_DOMAIN"
 export PATH="/usr/local/bin:$PATH"
+export LD_LIBRARY_PATH="/usr/local/bin/"
 
 cat <<EOM
 
 ## Copy the VPN commands
 EOM
+
+systemctl stop vpnclient  || :
 
 dpkg -i dist/*.deb
 
@@ -36,7 +39,15 @@ if [[ -f "$VPN_CONFIG" ]]; then
 fi
 systemctl start vpnclient
 
-vpncmd /CLIENT localhost /CMD NicCreate VPNNIC
+for retry_num in $(seq 1 10)
+do
+  vpncmd /CLIENT localhost /CMD NicCreate VPNNIC && break
+  if [ "$retry_num" -eq 5 ]; then
+    echo "Error: Could not connect to vpnclient"
+  fi
+  sleep 1
+done
+
 vpncmd /CLIENT localhost /CMD AccountCreate vpn_connection /SERVER:"$VPN_DOMAIN":443 /USERNAME:"$VPN_USERNAME" /HUB:VPN /NICNAME:VPNNIC
 vpncmd /CLIENT localhost /CMD AccountPasswordSet vpn_connection /PASSWORD "$VPN_PASSWORD" /TYPE:standard
 
@@ -45,3 +56,4 @@ if [[ -v ALL_PROXY ]]; then
 fi
 
 vpncmd /CLIENT localhost /CMD AccountStartupSet vpn_connection
+vpncmd /CLIENT localhost /CMD AccountConnect vpn_connection
