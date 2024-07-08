@@ -2,11 +2,11 @@
 
 set -euo pipefail
 
-: "$NIC" "$VPN_DOMAIN"
+: "$VPN_NIC" "$VPN_DOMAIN"
 export PATH="/usr/local/bin:$PATH"
 
 checknic() {
-  dhclient "$NIC"
+  dhclient "$VPN_NIC"
   MY_IP=$(ip addr show enp2s0 | grep inet | awk '{print $2}' | awk -F/ '{print $1}' | head -n 1)
   MY_GW=$(ip route | grep default | awk '{print $3}')
   MY_TOP_IP=$(echo "$MY_IP" | awk -F. '{print $1".0.0.0/8"}')
@@ -34,8 +34,7 @@ EOM
 
 cat ./scripts/interfaces >/etc/network/interfaces.d/vpn_vpnnic
 
-vpnclient stop || :
-vpnclient start
+systemctl restart vpnclient
 
 cat <<EOM
 
@@ -51,4 +50,4 @@ while true; do
   sleep 1
 done
 
-vpnclient stop
+systemctl stop vpnclient

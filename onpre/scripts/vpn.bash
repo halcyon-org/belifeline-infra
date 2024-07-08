@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
-: "$VPN_USERNAME" "$VPN_PASSWORD" "$VPN_DOMAIN"
+: "$VPN_USERNAME" "$VPN_DOMAIN"
 export PATH="/usr/local/bin:$PATH"
+export LD_LIBRARY_PATH="/usr/local/bin/"
 
 cat <<EOM
 
@@ -13,12 +14,17 @@ EOM
 mkdir -p /usr/local/bin/
 cp dist/* /usr/local/bin/ || :
 
+dpkg -i dist/pkg/*.deb
+
+cp scripts/vpnclient.service /etc/systemd/system/vpnclient.service
+systemctl daemon-reload
+
 cat <<EOM
 
 ## Create VPN settings
 EOM
 
-vpnclient stop || :
+systemctl stop vpnclient
 VPN_CONFIG='/usr/local/bin/vpn_client.config'
 if [[ -f "$VPN_CONFIG" ]]; then
   read -rp 'Delete the config? [y/N] ' REMOVE_CONFIG
@@ -26,11 +32,16 @@ if [[ -f "$VPN_CONFIG" ]]; then
     rm "$VPN_CONFIG"
   fi
 fi
-vpnclient start
+systemctl start vpnclient
 
 vpncmd /CLIENT localhost /CMD NicCreate VPNNIC
 vpncmd /CLIENT localhost /CMD AccountCreate vpn_connection /SERVER:"$VPN_DOMAIN":443 /USERNAME:"$VPN_USERNAME" /HUB:VPN /NICNAME:VPNNIC
-vpncmd /CLIENT localhost /CMD AccountPasswordSet vpn_connection /PASSWORD "$VPN_PASSWORD" /TYPE:standard
+
+if [[ -v VPN_PASSWORD ]]; then
+  vpncmd /CLIENT localhost /CMD AccountPasswordSet vpn_connection /PASSWORD "$VPN_PASSWORD" /TYPE:standard
+else
+  vpncmd /CLIENT localhost /CMD AccountAnonymousSet vpn_connection
+fi
 
 if [[ -v ALL_PROXY ]]; then
   vpncmd /CLIENT localhost /CMD AccountProxyHttp vpn_connection /SERVER:"$(echo "$ALL_PROXY" | awk -F [:/] '{print $4":"$5}')"
