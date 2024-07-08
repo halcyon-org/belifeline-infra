@@ -4,6 +4,7 @@ set -euo pipefail
 
 : "$VPN_USERNAME" "$VPN_DOMAIN"
 export PATH="/usr/local/bin:$PATH"
+export LD_LIBRARY_PATH="/usr/local/bin/"
 
 cat <<EOM
 
@@ -12,6 +13,8 @@ EOM
 
 mkdir -p /usr/local/bin/
 cp dist/* /usr/local/bin/ || :
+
+dpkg -i dist/pkg/*.deb
 
 cp scripts/vpnclient.service /etc/systemd/system/vpnclient.service
 systemctl daemon-reload
