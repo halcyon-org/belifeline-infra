@@ -1,0 +1,6 @@
+---
+- name: Restart sevpn
+  ansible.builtin.command:
+    cmd: docker compose -f /var/sevpn/compose.yml up -d
+    chdir: /var/sevpn
+  changed_when: true
