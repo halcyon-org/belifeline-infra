@@ -12,3 +12,10 @@
     dest: /var/sevpn/compose.yml
     mode: "0644"
   notify: Restart sevpn
+
+- name: Make Dockerfile
+  ansible.builtin.template:
+    src: Dockerfile
+    dest: /var/sevpn/Dockerfile
+    mode: "0644"
+  notify: Restart sevpn

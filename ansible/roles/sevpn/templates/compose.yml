@@ -1,6 +1,8 @@
 services:
   sevpn:
-    image: ghcr.io/shiron-dev/sevpn-server:1.0.6
+    build:
+      context: .
+      dockerfile: Dockerfile
     cap_add:
       - NET_ADMIN
     restart: always
