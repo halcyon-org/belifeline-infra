@@ -15,10 +15,10 @@ WORKDIR /usr/local/src
 RUN git clone https://github.com/SoftEtherVPN/SoftEtherVPN.git
 #RUN git clone -b ${GIT_TAG} https://github.com/SoftEtherVPN/SoftEtherVPN.git
 ENV USE_MUSL=YES
-RUN cd SoftEtherVPN &&\
-  git submodule init &&\
-  git submodule update &&\
-  ./configure $TARGET_CONFIG_FLAGS &&\
+RUN cd SoftEtherVPN && \
+  git submodule init && \
+  git submodule update && \
+  ./configure $TARGET_CONFIG_FLAGS && \
   make -C build
 
 FROM alpine
@@ -32,8 +32,8 @@ ENV LD_LIBRARY_PATH /root
 WORKDIR /usr/local/bin
 VOLUME /mnt
 RUN ln -s /mnt/vpn_server.config vpn_server.config && \
-  mkdir /mnt/backup.vpn_server.config &&\
-  ln -s /mnt/backup.vpn_server.config backup.vpn_server.config &&\
+  mkdir /mnt/backup.vpn_server.config && \
+  ln -s /mnt/backup.vpn_server.config backup.vpn_server.config && \
   ln -s /mnt/lang.config lang.config
 COPY --from=builder /usr/local/src/SoftEtherVPN/build/vpnserver /usr/local/src/SoftEtherVPN/build/vpncmd /usr/local/src/SoftEtherVPN/build/libcedar.so /usr/local/src/SoftEtherVPN/build/libmayaqua.so /usr/local/src/SoftEtherVPN/build/hamcore.se2 ./
 COPY --from=builder /usr/local/src/SoftEtherVPN/build/libcedar.so /usr/local/src/SoftEtherVPN/build/libmayaqua.so ../lib/
