@@ -1,0 +1,20 @@
+---
+- name: Update apt
+  become: true
+  ansible.builtin.apt:
+  when: ansible_pkg_mgr == "apt"
+
+- name: Install nginx
+  become: true
+  ansible.builtin.package:
+    name: nginx
+
+- name: Make sites-available/default
+  become: true
+  ansible.builtin.template:
+    src: default.j2
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart nginx
