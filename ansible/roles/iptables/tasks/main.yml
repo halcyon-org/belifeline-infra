@@ -1,0 +1,18 @@
+---
+- name: Make netfilter-persistent config
+  ansible.builtin.template:
+    src: netfilter-persistent
+    dest: /etc/default/netfilter-persistent
+    mode: "0644"
+  become: true
+  notify: Reload iptables
+
+- name: Make iptables rules.v4
+  ansible.builtin.template:
+    src: rules.v4
+    dest: /etc/iptables/rules.v4
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload iptables
