@@ -14,8 +14,6 @@ EOM
 mkdir -p /usr/local/bin/
 cp dist/* /usr/local/bin/ || :
 
-dpkg -i dist/pkg/*.deb
-
 cp scripts/vpnclient.service /etc/systemd/system/vpnclient.service
 systemctl daemon-reload
 
