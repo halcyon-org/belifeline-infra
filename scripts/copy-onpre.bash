@@ -8,7 +8,7 @@ USB=$(find /Volumes/* -maxdepth 0 -type d -not -path "/Volumes/Macintosh HD" | h
 read -rp "Do you want to copy to $USB? [y/N] " COPY_USB
 
 if [[ "$COPY_USB" =~ ^[yY]([eE][sS])?$ ]]; then
-  cp -r "$SCRIPT_DIR"/../onpre "$USB"/halcyon/belifeline-infra/
+  rsync -av --update "$SCRIPT_DIR"/../onpre/ "$USB"/halcyon/belifeline-infra/
   echo "Copied to $USB/halcyon/belifeline-infra/"
 else
   exit 0
