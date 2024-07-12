@@ -12,6 +12,13 @@ EOM
 cat <<EOM
 
 
+# deps.bash
+EOM
+./scripts/deps.bash
+
+cat <<EOM
+
+
 # network.bash
 EOM
 ./scripts/network.bash
