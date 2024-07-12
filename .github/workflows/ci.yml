@@ -5,7 +5,7 @@ on:
     branches:
       - "main"
     paths:
-      - ansible
+      - "ansible/**"
 
 jobs:
   lint:
