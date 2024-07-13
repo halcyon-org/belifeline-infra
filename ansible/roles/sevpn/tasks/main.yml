@@ -1,8 +1,8 @@
 ---
-- name: Mkdir /var/sevpn
+- name: Mkdir /var/sevpn/dnsmasq
   become: true
   ansible.builtin.file:
-    path: /var/sevpn
+    path: /var/sevpn/dnsmasq
     state: directory
     mode: "0777"
 
@@ -18,4 +18,13 @@
     src: Dockerfile
     dest: /var/sevpn/Dockerfile
     mode: "0644"
+  notify: Restart sevpn
+
+- name: Make dnsmasq/*
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/var/sevpn/dnsmasq/{{ item | basename }}"
+    mode: "0644"
+  with_fileglob:
+    - "./templates/dnsmasq/*"
   notify: Restart sevpn

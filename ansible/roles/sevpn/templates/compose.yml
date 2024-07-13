@@ -6,6 +6,8 @@ services:
     cap_add:
       - NET_ADMIN
     restart: always
+    networks:
+      - senet
     ports:
       - 530:53
       - 443:443
@@ -22,3 +24,14 @@ services:
       - "./volume_data/softether_log:/usr/local/bin/server_log"
       - "./volume_data/softether_packetlog:/usr/local/bin/packet_log"
       - "./volume_data/softether_securitylog:/usr/local/bin/security_log"
+  dnsmasq:
+    build:
+      context: ./dnsmasq
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - senet
+
+networks:
+  senet:
+    driver: bridge
