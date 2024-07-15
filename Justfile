@@ -36,5 +36,8 @@ lint:
 lint-fix:
   cd ansible && ansible-lint --fix
 
+onpre-gen:
+  cd scripts/gen && just gen
+
 private-gen:
   cd private && just gen
