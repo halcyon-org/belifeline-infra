@@ -11,6 +11,8 @@ if (! grep '# Run dhclient every 5 minutes' /etc/crontab); then
   cat >> /etc/crontab <<EOM
 
 # Run dhclient every 5 minutes
-*/5 * * * * root /root/onpre/vpn.bash
+*/5 * * * * root dhclient
 EOM
 fi
+
+systemctl restart cron
