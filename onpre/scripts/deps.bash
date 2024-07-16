@@ -7,7 +7,7 @@ cat <<EOM
 ## Install dependencies
 EOM
 
-packages=("libsodium-dev" "dnsmasq" "frr-pythontools")
+packages=("libsodium-dev")
 
 for pkg in "${packages[@]}"
 do

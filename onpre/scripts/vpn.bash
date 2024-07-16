@@ -16,6 +16,7 @@ cp dist/* /usr/local/bin/ || :
 
 cp scripts/vpnclient.service /etc/systemd/system/vpnclient.service
 systemctl daemon-reload
+systemctl enable vpnclient
 
 cat <<EOM
 

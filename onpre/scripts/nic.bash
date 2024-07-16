@@ -15,23 +15,11 @@ cp -i ./scripts/interfaces/"$VPN_USERNAME" /etc/network/interfaces
 
 cat <<EOM
 
-### Down interfaces
+### Reload interfaces
 EOM
 
-ifdown vmbr0
-ifdown vmbr1
-ifdown enp2s0
-systemctl stop vpnclient
-
-cat <<EOM
-
-### Up interfaces
-EOM
-
-ifup enp2s0
 systemctl start vpnclient
-ifup vmbr0
-ifup vmbr1
+ifreload -a
 
 cat <<EOM
 

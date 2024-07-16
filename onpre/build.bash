@@ -16,7 +16,7 @@ docker stop debian-sevpn
 mkdir -p dist/pkg
 chmod a+wr dist/pkg
 apt-get install apt-rdepends
-readarray -t pkg_list < <(apt-rdepends libsodium-dev dnsmasq frr-pythontools | grep -v '^ ' | sed -e 's/debconf-2.0/debconf/' -e 's/cron-daemon$/cron-daemon-common/')
+readarray -t pkg_list < <(apt-rdepends libsodium-dev | grep -v '^ ' | sed -e 's/debconf-2.0/debconf/' -e 's/cron-daemon$/cron-daemon-common/')
 (cd dist/pkg && apt-get download "${pkg_list[@]}")
 
 if [ -d /mnt ]; then
@@ -25,7 +25,7 @@ if [ -d /mnt ]; then
   read -rp 'Do you want to copy to /mnt? [y/N] ' COPY_USB
 
   if [[ "$COPY_USB" =~ ^[yY]([eE][sS])?$ ]]; then
-    cp -r "$SCRIPT_DIR"/../onpre /mnt/halcyon/belifeline-infra/
+    cp -r "$SCRIPT_DIR"/../onpre/* /mnt/halcyon/belifeline-infra/onpre/
     echo 'Copied to /mnt/halcyon/belifeline-infra/'
   else
     exit 0

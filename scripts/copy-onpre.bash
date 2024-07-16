@@ -9,7 +9,7 @@ if [ -z "$USB" ]; then
   echo "USB not found"
   read -rp "Host name of the on-premise pve(souzou0x): " PVE_NAME
   if [ -n "$PVE_NAME" ]; then
-    rsync -av --update "$SCRIPT_DIR"/../onpre/ "root@$PVE_NAME":/root/onpre/
+    rsync -av --update "$SCRIPT_DIR"/../onpre/* "root@$PVE_NAME":/root/onpre/
     echo "Copied to $PVE_NAME:/root/onpre/"
   else
     echo "No PVE_NAME provided"
@@ -21,7 +21,8 @@ else
   if [[ "$COPY_USB" =~ ^[nN]([oO])?$ ]]; then
     exit 0
   else
-    rsync -av --update "$SCRIPT_DIR"/../onpre/ "$USB"/halcyon/belifeline-infra/
+    mkdir -p "$USB"/halcyon/belifeline-infra/onpre/
+    rsync -av --update "$SCRIPT_DIR"/../onpre/* "$USB"/halcyon/belifeline-infra/onpre/
     echo "Copied to $USB/halcyon/belifeline-infra/"
   fi
 fi
