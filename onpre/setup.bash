@@ -20,6 +20,13 @@ EOM
 cat <<EOM
 
 
+# cron.bash
+EOM
+./scripts/cron.bash
+
+cat <<EOM
+
+
 # deps.bash
 EOM
 ./scripts/deps.bash
