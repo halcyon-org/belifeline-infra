@@ -2,52 +2,46 @@
 
 set -euo pipefail
 
-: "$VPN_NIC" "$VPN_DOMAIN"
-export PATH="/usr/local/bin:$PATH"
-
-checknic() {
-  dhclient "$VPN_NIC"
-  MY_IP=$(ip addr show enp2s0 | grep inet | awk '{print $2}' | awk -F/ '{print $1}' | head -n 1)
-  MY_GW=$(ip route | grep default | awk '{print $3}')
-  MY_TOP_IP=$(echo "$MY_IP" | awk -F. '{print $1".0.0.0/8"}')
-  VPN_IP=$(ip addr show vpn_vpnnic | grep inet | awk '{print $2}' | awk -F/ '{print $1}' | head -n 1)
-  VPN_GW=$(echo "$VPN_IP" | awk -F. '{print $1"."$2"."$3".1"}')
-  VPN_HOST=$(nslookup "$VPN_DOMAIN" | grep Address | awk '{print $2}' | tail -n 1)
-  echo "My IP: $MY_IP"
-  echo "My GW: $MY_GW"
-  echo "VPN DOMAIN: $VPN_DOMAIN"
-  echo "VPN HOST: $VPN_HOST"
-  echo "VPN IP: $VPN_IP"
-  echo "VPN GW: $VPN_GW"
-
-  ip route add "$VPN_HOST" via "$MY_GW"
-  ip route add "$MY_TOP_IP" via "$MY_GW"
-  ip route del default
-  ip route add default via "$VPN_GW"
-  echo "nameserver $VPN_GW" >/etc/resolv.conf
-}
+: "$VPN_USERNAME"
 
 cat <<EOM
 
-## Copy the vpn_vpnnic interface
+## Cofigure the vpn_vpnnic interface
 EOM
 
-cat ./scripts/interfaces >/etc/network/interfaces.d/vpn_vpnnic
+rm -f /etc/network/interfaces.d/vpn_vpnnic
 
-systemctl restart vpnclient
+cp -i ./scripts/interfaces/"$VPN_USERNAME" /etc/network/interfaces
+
+cat <<EOM
+
+### Reload interfaces
+EOM
+
+systemctl start vpnclient
+ifreload -a
+
+cat <<EOM
+
+### Restart networking
+EOM
+
+systemctl restart networking
 
 cat <<EOM
 
 ## Try connecting to the VPN
 EOM
 
-while true; do
-  if ip link show vpn_vpnnic &>/dev/null; then
-    checknic
-    wget -q -O - httpbin.org/ip
+for i in {1..10}; do
+  if res=$(wget -q -O - httpbin.org/ip)
+  then
+    echo "$res"
     break
+  elif [[ $i -eq 10 ]]; then
+    echo "Failed to connect to VPN"
+    exit 1
   fi
   sleep 1
+  echo "Waiting for VPN connection... $i/10"
 done
-
-systemctl stop vpnclient

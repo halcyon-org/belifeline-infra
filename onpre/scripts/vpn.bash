@@ -16,6 +16,7 @@ cp dist/* /usr/local/bin/ || :
 
 cp scripts/vpnclient.service /etc/systemd/system/vpnclient.service
 systemctl daemon-reload
+systemctl enable vpnclient
 
 cat <<EOM
 
@@ -32,9 +33,12 @@ if [[ -f "$VPN_CONFIG" ]]; then
 fi
 systemctl start vpnclient
 
-vpncmd /CLIENT localhost /CMD NicCreate VPNNIC
-vpncmd /CLIENT localhost /CMD AccountCreate vpn_connection /SERVER:"$VPN_DOMAIN":443 /USERNAME:"$VPN_USERNAME" /HUB:VPN /NICNAME:VPNNIC
-
+if (! vpncmd /CLIENT localhost /CMD NicList | grep 'VPNNIC'); then
+  vpncmd /CLIENT localhost /CMD NicCreate VPNNIC
+fi
+if (! vpncmd /CLIENT localhost /CMD AccountGet vpn_connection); then
+  vpncmd /CLIENT localhost /CMD AccountCreate vpn_connection /SERVER:"$VPN_DOMAIN":443 /USERNAME:"$VPN_USERNAME" /HUB:VPN /NICNAME:VPNNIC
+fi
 if [[ -v VPN_PASSWORD ]]; then
   vpncmd /CLIENT localhost /CMD AccountPasswordSet vpn_connection /PASSWORD "$VPN_PASSWORD" /TYPE:standard
 else

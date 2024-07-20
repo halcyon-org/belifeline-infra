@@ -1,0 +1,13 @@
+set export
+
+ansible_default_opt := ""
+
+default:
+  @just --list
+
+setup:
+  python3 -m venv env
+  env/bin/pip install -r requirements.txt
+
+gen: setup
+  env/bin/python __main__.py

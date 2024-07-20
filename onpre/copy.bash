@@ -3,4 +3,5 @@ set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
 
-cp -r "$SCRIPT_DIR"/../onpre ~/
+mkdir -p ~/onpre/
+rsync -av --update "$SCRIPT_DIR"/../onpre/* ~/onpre/
