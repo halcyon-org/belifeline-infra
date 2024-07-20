@@ -1,6 +1,9 @@
 ---
 - name: Restart sevpn
-  ansible.builtin.command:
-    cmd: docker compose -f /var/sevpn/compose.yml up -d
+  ansible.builtin.shell:
+    cmd: |
+      set -euo pipefail
+      docker compose -f /var/grafana/compose.yml down |:
+      docker compose -f /var/grafana/compose.yml up -d --build
     chdir: /var/sevpn
   changed_when: true
