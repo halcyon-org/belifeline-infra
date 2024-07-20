@@ -1,9 +1,16 @@
 ---
 - name: Restart sevpn
-  ansible.builtin.shell:
-    cmd: |
-      set -euo pipefail
-      docker compose -f /var/grafana/compose.yml down |:
-      docker compose -f /var/grafana/compose.yml up -d --build
-    chdir: /var/sevpn
+  become: true
+  ansible.builtin.systemd:
+    name: vpnserver
+    state: restarted
+    enabled: true
+
+- name: Apply netplan
+  become: true
+  ansible.builtin.command:
+    cmd: netplan apply
+  async: 45
+  poll: 0
   changed_when: true
+  notify: Restart sevpn

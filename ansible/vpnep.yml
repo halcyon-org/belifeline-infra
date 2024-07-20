@@ -11,9 +11,6 @@
     - role: sevpn
       tags:
         - sevpn
-    - role: nginx
-      tags:
-        - nginx
     - role: iptables
       tags:
         - iptables

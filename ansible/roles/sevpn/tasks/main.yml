@@ -2,20 +2,72 @@
 - name: Mkdir /var/sevpn
   become: true
   ansible.builtin.file:
-    path: /var/sevpn
+    path: /var/sevpn/softether/
     state: directory
     mode: "0777"
 
-- name: Make compose.yml
-  ansible.builtin.template:
-    src: compose.yml
-    dest: /var/sevpn/compose.yml
-    mode: "0644"
-  notify: Restart sevpn
+- name: Check dist
+  ansible.builtin.stat:
+    path: /var/sevpn/dist/vpnserver
+  register: dist
 
 - name: Make Dockerfile
   ansible.builtin.template:
     src: Dockerfile
-    dest: /var/sevpn/Dockerfile
+    dest: /var/sevpn/softether/Dockerfile
+    mode: "0644"
+  when: not dist.stat.exists
+
+- name: Build Docker image
+  community.docker.docker_image:
+    build:
+      path: /var/sevpn/softether/
+    name: softether
+    source: build
+  when: not dist.stat.exists
+
+- name: Start softether continer
+  community.docker.docker_container:
+    name: softether
+    image: softether
+    state: started
+    auto_remove: true
+  when: not dist.stat.exists
+
+- name: Copy from container to host
+  ansible.builtin.shell:
+    cmd: |
+      set -euo pipefail
+      docker cp softether:/usr/local/src/SoftEtherVPN/build /var/sevpn/dist
+      find /var/sevpn/dist/* -maxdepth 1 -type d | xargs rm -rf
+      find /var/sevpn/dist/ -maxdepth 1 -type f \
+        -not \( -not \( -name "*.*" -or -name "Makefile" \) \
+        -or -name "*.so" \
+        -or -name "*.se2" \) -delete
+  changed_when: true
+  notify: Restart sevpn
+  when: not dist.stat.exists
+
+- name: Stop softether container
+  community.docker.docker_container:
+    name: softether
+    state: stopped
+  when: not dist.stat.exists
+
+- name: Make vpnserver.service
+  become: true
+  ansible.builtin.template:
+    src: vpnserver.service
+    dest: /etc/systemd/system/vpnserver.service
     mode: "0644"
   notify: Restart sevpn
+
+- name: Make vpnnic netplan
+  become: true
+  ansible.builtin.template:
+    src: vpnnic.yaml
+    dest: /etc/netplan/30-vpnnic.yaml
+    mode: "0600"
+  notify:
+    - Restart sevpn
+    - Apply netplan

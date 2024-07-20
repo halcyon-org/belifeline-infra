@@ -1,0 +1,15 @@
+[Unit]
+Description = vpnserver daemon
+
+[Service]
+WorkingDirectory = /var/sevpn/dist/
+ExecStart = /var/sevpn/dist/vpnserver start
+ExecStop = /var/sevpn/dist/vpnserver stop
+ExecReload = /var/sevpn/dist/vpnserver restart
+Restart = always
+User = root
+Type = forking
+Environment = LD_LIBRARY_PATH=/var/sevpn/dist/
+
+[Install]
+WantedBy = multi-user.target
