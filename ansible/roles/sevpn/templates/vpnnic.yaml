@@ -1,9 +1,6 @@
-# iface tap_vpnnic inet manual
-#         address 192.168.30.11/24
-#         gateway 192.168.30.1
 network:
     version: 2
     ethernets:
         tap_vpnnic:
             dhcp4: true
-            addresses: [192.168.30.11/24]
+            addresses: [192.168.30.1/24]
