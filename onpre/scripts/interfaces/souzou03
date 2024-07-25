@@ -1,5 +1,5 @@
 # Hostname: souzou03
-# Pve name: pve02
+# Pve name: souzou03
 
 auto lo
 iface lo inet loopback

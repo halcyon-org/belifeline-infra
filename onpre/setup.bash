@@ -5,10 +5,9 @@ set -euo pipefail
 if [[ ! -v VPN_DOMAIN ]]; then
   export VPN_DOMAIN="magic.halcyon.cloud.shiron.dev"
 fi
-if [[ ! -v VPN_USERNAME ]]; then
-  read -rp 'VPN user name: ' VPN_USERNAME
-  export VPN_USERNAME
-fi
+
+HOSTNAME=$(uname -n)
+export HOSTNAME
 
 cat <<EOM
 

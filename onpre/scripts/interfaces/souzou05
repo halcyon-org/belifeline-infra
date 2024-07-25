@@ -1,5 +1,5 @@
-# Hostname: souzou08
-# Pve name: pve01
+# Hostname: souzou05
+# Pve name: souzou05
 
 auto lo
 iface lo inet loopback
@@ -8,19 +8,19 @@ iface enp2s0 inet manual
 
 auto vmbr0
 iface vmbr0 inet static
-        address 172.16.168.34/21
+        address 172.16.168.37/21
         gateway 172.16.168.1
         bridge-ports enp2s0
         bridge-stp off
         bridge-fd 0
 
 iface vpn_vpnnic inet manual
-        address 192.168.30.31/24
+        address 192.168.30.34/24
         gateway 192.168.30.1
 
 auto vmbr1
 iface vmbr1 inet static
-        address 192.168.30.31/24
+        address 192.168.30.34/24
         gateway 192.168.30.1
         bridge-ports vpn_vpnnic
         bridge-stp off
