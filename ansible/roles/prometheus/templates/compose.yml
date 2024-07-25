@@ -37,6 +37,8 @@ services:
   prometheus:
     container_name: prometheus
     image: prom/prometheus:v2.53.1
+    ports:
+      - 9090:9090
     volumes:
       - "./prometheus.yml:/etc/prometheus/prometheus.yml"
     extra_hosts:
@@ -52,12 +54,12 @@ services:
     restart: always
     volumes:
       - "/:/host:ro,rslave"
-    ports:
-      - 9100:9100
   blackbox_exporter:
     container_name: blackbox_exporter
     image: prom/blackbox-exporter:latest
     volumes:
       - ./blackbox_exporter/config.yml:/etc/blackbox_exporter/config.yml
+    dns:
+      - 192.168.30.1
     network_mode: host
     restart: always

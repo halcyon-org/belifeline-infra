@@ -21,23 +21,42 @@ scrape_configs:
       - targets:
         - host.docker.internal:9100
   
+  - job_name: 'blackbox_http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - https://souzou08:8006
+        - https://souzou03:8006
+        - https://souzou04:8006
+        - https://souzou05:8006
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+        regex: https://([^:]+):\d+ 
+      - target_label: __address__
+        replacement: host.docker.internal:9115
+
   - job_name: 'blackbox_icmp'
     metrics_path: /probe
     params:
       module: [icmp]
     static_configs:
       - targets:
-        - "souzou08:192.168.30.31"
-        - "souzou03:192.168.30.32"
-        - "souzou04:192.168.30.33"
-        - "souzou05:192.168.30.34"
+        - souzou08
+        - souzou03
+        - souzou04
+        - souzou05
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: blackbox_exporter:9115
+        replacement: host.docker.internal:9115
         
 remote_write:
   - url: "http://victoriametrics:8428/api/v1/write"
