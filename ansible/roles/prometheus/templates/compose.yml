@@ -1,0 +1,63 @@
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:v2.9
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:9800"
+      - --log.level=DEBUG
+    ports:
+      - 9800:9800
+      - 8080:8080
+    labels:
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  victoriametrics:
+    container_name: victoriametrics
+    image: victoriametrics/victoria-metrics:v1.102.0
+    volumes:
+      - ./vmdata:/storage
+    command:
+      - "--storageDataPath=/storage"
+      - "--httpListenAddr=:8428"
+    ports:
+      - 8428:8428
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.victoriametrics.entrypoints=web"
+      - "traefik.http.routers.victoriametrics.rule=PathPrefix(`/prometheus`)"
+      - "traefik.http.services.victoriametrics.loadbalancer.server.port=8428"
+      - "traefik.http.routers.victoriametrics.middlewares=victoriametrics-stripprefix"
+      - "traefik.http.middlewares.victoriametrics-stripprefix.stripprefix.prefixes=/prometheus"
+    restart: always
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.53.1
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+  node_exporter:
+    container_name: node_exporter
+    image: quay.io/prometheus/node-exporter:latest
+    command:
+      - "--path.rootfs=/host"
+    network_mode: host
+    pid: host
+    restart: always
+    volumes:
+      - "/:/host:ro,rslave"
+    ports:
+      - 9100:9100
+  blackbox_exporter:
+    container_name: blackbox_exporter
+    image: prom/blackbox-exporter:latest
+    volumes:
+      - ./blackbox_exporter/config.yml:/etc/blackbox_exporter/config.yml
+    network_mode: host
+    restart: always

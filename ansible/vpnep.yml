@@ -14,3 +14,6 @@
     - role: iptables
       tags:
         - iptables
+    - role: prometheus
+      tags:
+        - prometheus

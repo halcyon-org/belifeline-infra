@@ -1,0 +1,6 @@
+---
+- name: Restart prometheus
+  ansible.builtin.command:
+    cmd: docker compose -f /var/prometheus/compose.yml up -d --build
+    chdir: /var/prometheus
+  changed_when: true

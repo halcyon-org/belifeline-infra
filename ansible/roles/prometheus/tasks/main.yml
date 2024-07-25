@@ -1,0 +1,31 @@
+---
+- name: Mkdir /var/prometheus
+  become: true
+  ansible.builtin.file:
+    path: /var/prometheus/blackbox_exporter
+    state: directory
+    mode: "0755"
+
+- name: Make prometheus.yml
+  become: true
+  ansible.builtin.template:
+    src: prometheus.yml
+    dest: /var/prometheus/prometheus.yml
+    mode: "0644"
+  notify: Restart prometheus
+
+- name: Make compose.yml
+  become: true
+  ansible.builtin.template:
+    src: compose.yml
+    dest: /var/prometheus/compose.yml
+    mode: "0644"
+  notify: Restart prometheus
+
+- name: Make blackbox_exporter/config.yml
+  become: true
+  ansible.builtin.template:
+    src: blackbox.yml
+    dest: /var/prometheus/blackbox_exporter/config.yml
+    mode: "0644"
+  notify: Restart prometheus
