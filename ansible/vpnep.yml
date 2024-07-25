@@ -11,6 +11,9 @@
     - role: sevpn
       tags:
         - sevpn
+    - role: dnsmasq
+      tags:
+        - dnsmasq
     - role: iptables
       tags:
         - iptables

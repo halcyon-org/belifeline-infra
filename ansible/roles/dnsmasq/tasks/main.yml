@@ -1,0 +1,32 @@
+---
+- name: Install dnsmasq
+  become: true
+  ansible.builtin.package:
+    name: dnsmasq
+    state: present
+
+- name: Change resolved.conf
+  become: true
+  ansible.builtin.template:
+    src: resolved.conf
+    dest: /etc/systemd/resolved.conf
+    mode: "0644"
+  notify: Restart systemd-resolved
+
+- name: Make dnsmasq.conf
+  become: true
+  ansible.builtin.template:
+    src: dnsmasq.conf
+    dest: /etc/dnsmasq.conf
+    mode: "0644"
+  notify: Restart dnsmasq
+
+- name: Make dnsmasq-* config files
+  become: true
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: /etc/{{ item | basename }}
+    mode: "0644"
+  with_fileglob:
+    - "templates/dnsmasq-*"
+  notify: Restart dnsmasq
