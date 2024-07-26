@@ -21,8 +21,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 52 6	1 * *	root	test -x /usr/sbin/anacron || { cd / && run-parts --report /etc/cron.monthly; }
 #
 
-# Run dhclient every 5 minutes
-*/5 * * * * root dhclient
+# Run dhclient every 20 minutes
+*/20 * * * * root timeout 60s /var/scripts/network.bash
 
 # Start minfana every weekday morning at 8:00 a.m.
 0 8 * * 1-5 root /var/scripts/start.sh
