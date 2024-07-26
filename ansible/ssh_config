@@ -2,3 +2,7 @@ Match host halcyon-srv.shiron.dev exec "cloudflared access ssh-gen --hostname %h
 ProxyCommand cloudflared access ssh --hostname %h
 IdentityFile ~/.cloudflared/%h-cf_key
 CertificateFile ~/.cloudflared/%h-cf_key-cert.pub
+
+Host 192.168.30.*
+IdentityFile ../private/cert/ssh/souzou.key
+ProxyCommand ssh -W %h:%p ansible_user@halcyon-srv.shiron.dev

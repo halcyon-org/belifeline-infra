@@ -1,0 +1,7 @@
+---
+- name: Minfana
+  hosts: souzou05
+  roles:
+    - role: pve_cron
+      tags:
+        - pve_cron
