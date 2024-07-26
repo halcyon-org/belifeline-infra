@@ -28,5 +28,5 @@
     dest: /etc/{{ item | basename }}
     mode: "0644"
   with_fileglob:
-    - "templates/dnsmasq-*"
+    - templates/dnsmasq-*
   notify: Restart dnsmasq

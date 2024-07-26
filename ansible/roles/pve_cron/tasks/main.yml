@@ -13,7 +13,7 @@
     dest: /var/scripts/{{ item | basename }}
     mode: "0644"
   with_fileglob:
-    - "templates/*.sh"
+    - templates/*.sh
   notify: Restart cron
 
 - name: Make /etc/crontab
