@@ -33,6 +33,13 @@ EOM
 cat <<EOM
 
 
+# ansible.bash
+EOM
+./scripts/ansible.bash
+
+cat <<EOM
+
+
 # network.bash
 EOM
 ./scripts/network.bash
