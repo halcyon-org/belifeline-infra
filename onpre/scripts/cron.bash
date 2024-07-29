@@ -18,6 +18,8 @@ ifreload -a
 
 EOM
 
+chmod a+x /var/scripts/network.bash
+
 if (! grep '# Run network.bash regularly' /etc/crontab); then
   cat >> /etc/crontab <<EOM
 
