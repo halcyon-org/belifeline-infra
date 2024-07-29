@@ -15,14 +15,13 @@ cat > /var/scripts/network.bash <<EOM
 set -euo pipefail
 
 ifreload -a
-dhclient enp2s0
 
 EOM
 
-if (! grep '# Run dhclient every 20 minutes' /etc/crontab); then
+if (! grep '# Run network.bash regularly' /etc/crontab); then
   cat >> /etc/crontab <<EOM
 
-# Run dhclient every 20 minutes
+# Run network.bash regularly
 */20 * * * * root timeout 60s /var/scripts/network.bash
 EOM
 fi

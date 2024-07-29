@@ -6,14 +6,10 @@ if (! ping -c 1 10.10.10.10 -W 1); then
   cat <<EOM
 
 ## Can't connect to 10.10.10.10
-   Down and up the enp2s0
+   Reload interfaces
 EOM
-
-  ifdown enp2s0
-  ifup enp2s0
+  ifreload -a
 fi
-
-dhclient
 
 if (ip a show enp2s0 | grep -E '10\.[0-9]+\.[0-9]+\.[0-9]+'); then
   cat <<EOM

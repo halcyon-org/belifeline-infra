@@ -71,4 +71,4 @@ fi
 
 vpncmd /CLIENT localhost /CMD AccountStartupSet vpn_connection
 
-vpncmd /CLIENT localhost /CMD AccountConnect vpn_connection
+vpncmd /CLIENT localhost /CMD AccountConnect vpn_connection || :
