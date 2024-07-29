@@ -1,4 +1,15 @@
 ---
+- name: Proxmox
+  hosts: pve
+  roles:
+    - role: pve_setup
+      tags:
+        - pve_setup
+
+    - role: Telegraf
+      tags:
+        - telegraf
+
 - name: Minfana
   hosts: souzou05
   roles:

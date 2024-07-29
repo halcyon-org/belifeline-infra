@@ -11,7 +11,7 @@
   ansible.builtin.template:
     src: "{{ item }}"
     dest: /var/scripts/{{ item | basename }}
-    mode: "0644"
+    mode: "0755"
   with_fileglob:
     - templates/*.sh
   notify: Restart cron
