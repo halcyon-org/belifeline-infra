@@ -2,6 +2,9 @@
 - name: VPNEP
   hosts: vpnep
   roles:
+    - role: swap
+      tags:
+        - swap
     - role: fail2ban
       tags:
         - fail2ban
