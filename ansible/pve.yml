@@ -6,7 +6,7 @@
       tags:
         - pve_setup
 
-    - role: Telegraf
+    - role: telegraf
       tags:
         - telegraf
 

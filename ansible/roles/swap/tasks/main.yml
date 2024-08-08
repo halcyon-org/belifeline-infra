@@ -1,7 +1,7 @@
 ---
 - name: Check swap
   become: true
-  ansible.builtin.command: "swapon --show"
+  ansible.builtin.command: swapon --show
   changed_when: false
   register: swap
 
@@ -11,25 +11,25 @@
 
 - name: Create swapfile
   become: true
-  ansible.builtin.command: "dd if=/dev/zero of=/swapfile bs=1M count=2048"
+  ansible.builtin.command: dd if=/dev/zero of=/swapfile bs=1M count=2048
   changed_when: true
   when: not is_swap
 
 - name: Set permissions
   become: true
-  ansible.builtin.command: "chmod 600 /swapfile"
+  ansible.builtin.command: chmod 600 /swapfile
   changed_when: true
   when: not is_swap
 
 - name: Make swap
   become: true
-  ansible.builtin.command: "mkswap /swapfile"
+  ansible.builtin.command: mkswap /swapfile
   changed_when: true
   when: not is_swap
 
 - name: Swap on
   become: true
-  ansible.builtin.command: "swapon /swapfile"
+  ansible.builtin.command: swapon /swapfile
   changed_when: true
   when: not is_swap
 
