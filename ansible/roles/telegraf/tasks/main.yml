@@ -1,0 +1,44 @@
+---
+- name: Check exist telegraf
+  ansible.builtin.command: which telegraf
+  register: exist_telegraf
+  changed_when: false
+  failed_when: false
+
+- name: Set fact telegraf_installed
+  ansible.builtin.set_fact:
+    telegraf_installed: "{{ exist_telegraf.rc == 0 }}"
+
+- name: Check architecture
+  ansible.builtin.command:
+    cmd: dpkg --print-architecture
+  register: architecture
+  changed_when: false
+
+- name: Download telegraf
+  ansible.builtin.get_url:
+    url: https://dl.influxdata.com/telegraf/releases/telegraf_{{ telegraf_version }}_{{ architecture.stdout }}.deb
+    dest: /tmp/telegraf.deb
+    mode: "0755"
+  when: not telegraf_installed
+
+- name: Install telegraf
+  become: true
+  ansible.builtin.command:
+    cmd: dpkg -i /tmp/telegraf.deb
+  changed_when: true
+  when: not telegraf_installed
+
+- name: Install lm-sensors
+  become: true
+  ansible.builtin.package:
+    name: lm-sensors
+    state: present
+
+- name: Make telegraf.conf
+  become: true
+  ansible.builtin.template:
+    src: telegraf.conf
+    dest: /etc/telegraf/telegraf.conf
+    mode: "0644"
+  notify: Restart telegraf

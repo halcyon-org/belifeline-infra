@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-: "$VPN_USERNAME"
-
 cat <<EOM
 
 ## Cofigure the vpn_vpnnic interface
@@ -11,7 +9,7 @@ EOM
 
 rm -f /etc/network/interfaces.d/vpn_vpnnic
 
-cp -i ./scripts/interfaces/"$VPN_USERNAME" /etc/network/interfaces
+cp -i ./scripts/interfaces/"$HOSTNAME" /etc/network/interfaces
 
 cat <<EOM
 

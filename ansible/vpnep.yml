@@ -2,6 +2,9 @@
 - name: VPNEP
   hosts: vpnep
   roles:
+    - role: swap
+      tags:
+        - swap
     - role: fail2ban
       tags:
         - fail2ban
@@ -11,9 +14,12 @@
     - role: sevpn
       tags:
         - sevpn
-    - role: nginx
+    - role: dnsmasq
       tags:
-        - nginx
+        - dnsmasq
     - role: iptables
       tags:
         - iptables
+    - role: prometheus
+      tags:
+        - prometheus

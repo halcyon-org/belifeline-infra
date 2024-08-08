@@ -1,5 +1,5 @@
 [Unit]
-Description = vpnserver daemon
+Description = vpnclient daemon
 
 [Service]
 WorkingDirectory = /usr/local/bin/

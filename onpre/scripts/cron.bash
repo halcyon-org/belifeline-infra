@@ -7,11 +7,24 @@ cat <<EOM
 ## Setup the cron job
 EOM
 
-if (! grep '# Run dhclient every 5 minutes' /etc/crontab); then
+mkdir -p /var/scripts/
+
+cat > /var/scripts/network.bash <<EOM
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ifreload -a
+
+EOM
+
+chmod a+x /var/scripts/network.bash
+
+if (! grep '# Run network.bash regularly' /etc/crontab); then
   cat >> /etc/crontab <<EOM
 
-# Run dhclient every 5 minutes
-*/5 * * * * root dhclient
+# Run network.bash regularly
+*/20 * * * * root timeout 60s /var/scripts/network.bash
 EOM
 fi
 

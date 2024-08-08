@@ -1,6 +1,16 @@
 ---
 - name: Restart sevpn
+  become: true
+  ansible.builtin.systemd:
+    name: vpnserver
+    state: restarted
+    enabled: true
+
+- name: Apply netplan
+  become: true
   ansible.builtin.command:
-    cmd: docker compose -f /var/sevpn/compose.yml up -d
-    chdir: /var/sevpn
+    cmd: netplan apply
+  async: 45
+  poll: 0
   changed_when: true
+  notify: Restart sevpn

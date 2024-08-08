@@ -1,0 +1,28 @@
+---
+- name: Restart systemd-resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: restarted
+
+- name: Stop dnsmasq
+  listen: Restart dnsmasq
+  become: true
+  ansible.builtin.systemd:
+    name: dnsmasq
+    state: stopped
+    enabled: true
+
+- name: Remove /var/log/dnsmasq.leases
+  listen: Restart dnsmasq
+  become: true
+  ansible.builtin.file:
+    path: /var/log/dnsmasq.leases
+    state: absent
+
+- name: Start dnsmasq
+  listen: Restart dnsmasq
+  become: true
+  ansible.builtin.systemd:
+    name: dnsmasq
+    state: started
+    enabled: true

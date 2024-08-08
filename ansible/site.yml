@@ -1,3 +1,5 @@
 ---
 - name: VPNEP
   import_playbook: vpnep.yml
+- name: PVE
+  import_playbook: pve.yml

@@ -1,0 +1,25 @@
+---
+- name: Mkdir /var/scripts
+  become: true
+  ansible.builtin.file:
+    path: /var/scripts
+    state: directory
+    mode: "0755"
+
+- name: Make scripts
+  become: true
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: /var/scripts/{{ item | basename }}
+    mode: "0755"
+  with_fileglob:
+    - templates/*.sh
+  notify: Restart cron
+
+- name: Make /etc/crontab
+  become: true
+  ansible.builtin.template:
+    src: crontab
+    dest: /etc/crontab
+    mode: "0644"
+  notify: Restart cron

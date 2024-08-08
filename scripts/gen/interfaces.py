@@ -7,12 +7,12 @@ import socket
 
 INTERFACES_TEMPLATE = "onpre/scripts/interfaces/interfaces.j2"
 VPN_DOMAIN = "magic.halcyon.cloud.shiron.dev"
-HOSTNAME_LIST = {
-    1: "souzou08",
-    2: "souzou03",
-    3: "souzou04",
-    4: "souzou05",
-}
+HOSTNAME_LIST = [
+    "souzou08",
+    "souzou03",
+    "souzou04",
+    "souzou05",
+]
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 path = os.path.abspath(os.path.join(script_path, "../../"))
@@ -26,12 +26,12 @@ def gen_interfaces():
 
     vpn_server_ip = socket.gethostbyname(VPN_DOMAIN)
     data = {}
-    for i in range(1, 4 + 1):
-        data[f"pve0{i}"] = {
-            "hostname": HOSTNAME_LIST[i],
-            "pve_name": f"pve0{i}",
-            "lan_ip": f"172.16.168.{33+i}",
-            "vpn_local_ip": f"192.168.30.3{i}",
+    for i, host in enumerate(HOSTNAME_LIST):
+        data[host] = {
+            "hostname": host,
+            "pve_name": host,
+            "lan_ip": f"172.16.168.{34+i}",
+            "vpn_local_ip": f"192.168.30.3{1+i}",
             "vpn_server_ip": vpn_server_ip,
         }
 

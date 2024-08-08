@@ -2,9 +2,26 @@
 
 set -euo pipefail
 
-: "$VPN_USERNAME" "$VPN_DOMAIN"
+: "$VPN_DOMAIN"
 export PATH="/usr/local/bin:$PATH"
 export LD_LIBRARY_PATH="/usr/local/bin/"
+
+declare -A host_mac_dict=(
+        ["souzou08"]="5e:ae:00:00:00:01"
+        ["souzou03"]="5e:ae:00:00:00:02"
+        ["souzou04"]="5e:ae:00:00:00:03"
+        ["souzou05"]="5e:ae:00:00:00:04"
+)
+
+if [ -z "${host_mac_dict["$HOSTNAME"]}" ]; then
+    cat <<EOM
+Unknown hostname.
+The mac address does not exist in dict.
+EOM
+    exit 1
+fi
+
+host_mac="${host_mac_dict["$HOSTNAME"]}"
 
 cat <<EOM
 
@@ -35,9 +52,12 @@ systemctl start vpnclient
 
 if (! vpncmd /CLIENT localhost /CMD NicList | grep 'VPNNIC'); then
   vpncmd /CLIENT localhost /CMD NicCreate VPNNIC
+  vpncmd /CLIENT localhost /CMD NicSetSetting VPNNIC /MAC:"$host_mac"
+  systemctl restart vpnclient
 fi
+
 if (! vpncmd /CLIENT localhost /CMD AccountGet vpn_connection); then
-  vpncmd /CLIENT localhost /CMD AccountCreate vpn_connection /SERVER:"$VPN_DOMAIN":443 /USERNAME:"$VPN_USERNAME" /HUB:VPN /NICNAME:VPNNIC
+  vpncmd /CLIENT localhost /CMD AccountCreate vpn_connection /SERVER:"$VPN_DOMAIN":443 /USERNAME:"$HOSTNAME" /HUB:VPN /NICNAME:VPNNIC
 fi
 if [[ -v VPN_PASSWORD ]]; then
   vpncmd /CLIENT localhost /CMD AccountPasswordSet vpn_connection /PASSWORD "$VPN_PASSWORD" /TYPE:standard
@@ -50,3 +70,5 @@ if [[ -v ALL_PROXY ]]; then
 fi
 
 vpncmd /CLIENT localhost /CMD AccountStartupSet vpn_connection
+
+vpncmd /CLIENT localhost /CMD AccountConnect vpn_connection || :

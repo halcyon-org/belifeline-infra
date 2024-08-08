@@ -1,0 +1,86 @@
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:v2.9
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:9800"
+    ports:
+      - 9800:9800
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  victoriametrics:
+    container_name: victoriametrics
+    image: victoriametrics/victoria-metrics:v1.102.0
+    volumes:
+      - ./vmdata:/storage
+    command:
+      - "--storageDataPath=/storage"
+      - "--httpListenAddr=:8428"
+    ports:
+      - 8428:8428
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.victoriametrics.entrypoints=web"
+      - "traefik.http.routers.victoriametrics.rule=PathPrefix(`/prometheus`)"
+      - "traefik.http.services.victoriametrics.loadbalancer.server.port=8428"
+      - "traefik.http.routers.victoriametrics.middlewares=victoriametrics-stripprefix"
+      - "traefik.http.middlewares.victoriametrics-stripprefix.stripprefix.prefixes=/prometheus"
+    restart: always
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.53.1
+    ports:
+      - 9090:9090
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+  node_exporter:
+    container_name: node_exporter
+    image: quay.io/prometheus/node-exporter:latest
+    command:
+      - "--path.rootfs=/host"
+    network_mode: host
+    pid: host
+    restart: always
+    volumes:
+      - "/:/host:ro,rslave"
+  blackbox_exporter:
+    container_name: blackbox_exporter
+    image: prom/blackbox-exporter:latest
+    volumes:
+      - ./blackbox_exporter/config.yml:/etc/blackbox_exporter/config.yml
+    dns:
+      - 192.168.30.1
+    network_mode: host
+    restart: always
+  loki:
+    image: grafana/loki
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki:/etc/loki
+      - ./loki_data:/loki
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.loki.entrypoints=web"
+      - "traefik.http.routers.loki.rule=PathPrefix(`/loki`)"
+      - "traefik.http.services.loki.loadbalancer.server.port=3100"
+      - "traefik.http.routers.loki.middlewares=loki-stripprefix"
+      - "traefik.http.middlewares.loki-stripprefix.stripprefix.prefixes=/loki"
+    restart: always
+  promtail:
+    image: grafana/promtail
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log
+      - ./promtail:/etc/promtail
+      - /run/systemd/journal:/run/systemd/journal
+    command: -config.file=/etc/promtail/config.yml
+    restart: always

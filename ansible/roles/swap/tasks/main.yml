@@ -1,0 +1,44 @@
+---
+- name: Check swap
+  become: true
+  ansible.builtin.command: swapon --show
+  changed_when: false
+  register: swap
+
+- name: Set is_swap to true
+  ansible.builtin.set_fact:
+    is_swap: "{{ swap.stdout.find('/swapfile') != -1 }}"
+
+- name: Create swapfile
+  become: true
+  ansible.builtin.command: dd if=/dev/zero of=/swapfile bs=1M count=2048
+  changed_when: true
+  when: not is_swap
+
+- name: Set permissions
+  become: true
+  ansible.builtin.command: chmod 600 /swapfile
+  changed_when: true
+  when: not is_swap
+
+- name: Make swap
+  become: true
+  ansible.builtin.command: mkswap /swapfile
+  changed_when: true
+  when: not is_swap
+
+- name: Swap on
+  become: true
+  ansible.builtin.command: swapon /swapfile
+  changed_when: true
+  when: not is_swap
+
+- name: Template /etc/fstab
+  become: true
+  ansible.builtin.template:
+    src: fstab
+    dest: /etc/fstab
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
