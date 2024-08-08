@@ -12,11 +12,11 @@
     state: stopped
     enabled: true
 
-- name: Remove /var/lib/dnsmasq/dnsmasq.leases
+- name: Remove /var/log/dnsmasq.leases
   listen: Restart dnsmasq
   become: true
   ansible.builtin.file:
-    path: /var/lib/dnsmasq/dnsmasq.leases
+    path: /var/log/dnsmasq.leases
     state: absent
 
 - name: Start dnsmasq
