@@ -6,14 +6,9 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--entrypoints.web.address=:9800"
-      - --log.level=DEBUG
     ports:
       - 9800:9800
       - 8080:8080
-    labels:
-      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
-      - "traefik.http.routers.api.service=api@internal"
-      - "traefik.http.services.api.loadbalancer.server.port=8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
   victoriametrics:
@@ -62,4 +57,30 @@ services:
     dns:
       - 192.168.30.1
     network_mode: host
+    restart: always
+  loki:
+    image: grafana/loki
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki:/etc/loki
+      - ./loki_data:/loki
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.loki.entrypoints=web"
+      - "traefik.http.routers.loki.rule=PathPrefix(`/loki`)"
+      - "traefik.http.services.loki.loadbalancer.server.port=3100"
+      - "traefik.http.routers.loki.middlewares=loki-stripprefix"
+      - "traefik.http.middlewares.loki-stripprefix.stripprefix.prefixes=/loki"
+    restart: always
+  promtail:
+    image: grafana/promtail
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log
+      - ./promtail:/etc/promtail
+      - /run/systemd/journal:/run/systemd/journal
+    command: -config.file=/etc/promtail/config.yml
     restart: always

@@ -29,3 +29,40 @@
     dest: /var/prometheus/blackbox_exporter/config.yml
     mode: "0644"
   notify: Restart prometheus
+
+- name: Mkdir /var/prometheus/loki
+  become: true
+  ansible.builtin.file:
+    path: /var/prometheus/loki
+    state: directory
+    mode: "0755"
+
+- name: Make loki/local-config.yaml
+  become: true
+  ansible.builtin.template:
+    src: loki.yaml
+    dest: /var/prometheus/loki/local-config.yaml
+    mode: "0644"
+  notify: Restart prometheus
+
+- name: Make loki_data
+  become: true
+  ansible.builtin.file:
+    path: /var/prometheus/loki_data
+    state: directory
+    mode: "0777"
+
+- name: Mkdir /var/prometheus/promtail
+  become: true
+  ansible.builtin.file:
+    path: /var/prometheus/promtail
+    state: directory
+    mode: "0755"
+
+- name: Make promtail/config.yml
+  become: true
+  ansible.builtin.template:
+    src: promtail.yml
+    dest: /var/prometheus/promtail/config.yml
+    mode: "0644"
+  notify: Restart prometheus
