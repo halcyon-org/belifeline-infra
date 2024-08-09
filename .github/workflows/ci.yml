@@ -4,22 +4,9 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - "ansible/**"
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup ansible
-        run: pip install ansible ansible-lint
-      - name: Run ansible-galaxy
-        run: cd ansible && ansible-galaxy install -r requirements.yml
-      - name: Run ansible-lint
-        run: cd ansible && ansible-lint
-  check_symlinks:
+  check-symlinks:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
