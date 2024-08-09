@@ -1,0 +1,100 @@
+name: Main CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+
+defaults:
+  run:
+    working-directory: ./terraform
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3.1.1
+        with:
+          terraform_version: 1.9.3
+      - name: Terraform init
+        run: terraform init
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive
+      - name: Terraform validate
+        run: terraform validate -no-color
+
+  terraform-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2.1.4
+        with:
+          workload_identity_provider: "projects/494673853308/locations/global/workloadIdentityPools/github-oidc-pool/providers/github-actions"
+          service_account: terraform@vaulted-zodiac-431004-s7.iam.gserviceaccount.com
+      - uses: hashicorp/setup-terraform@v3.1.1
+      - name: Terraform init
+        run: terraform init
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color
+        continue-on-error: true
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Plan 📖\`${{ steps.plan.outputs.stdout }}\``;
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+  terraform-infracost:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: "${{ github.event.pull_request.base.ref }}"
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3.0.1
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+      - name: Generate Infracost cost estimate baseline
+        run: |
+          infracost breakdown --path=. \
+                              --format=json \
+                              --out-file=/tmp/infracost-base.json
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+      - name: Generate Infracost diff
+        run: |
+          infracost diff --path=. \
+            --format=json \
+            --compare-to=/tmp/infracost-base.json \
+            --out-file=/tmp/infracost.json
+      - name: Post Infracost comment
+        run: |
+          infracost comment github --path=/tmp/infracost.json \
+            --repo=$GITHUB_REPOSITORY \
+            --github-token=${{ github.token }} \
+            --pull-request=${{ github.event.pull_request.number }} \
+            --behavior=update

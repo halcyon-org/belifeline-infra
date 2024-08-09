@@ -1,0 +1,28 @@
+name: Ansible CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "ansible/**"
+
+permissions:
+  pull-requests: write
+
+defaults:
+  run:
+    working-directory: ./ansible
+
+jobs:
+  ansible-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup ansible
+        run: pip install ansible ansible-lint
+      - name: Run ansible-galaxy
+        run: ansible-galaxy install -r requirements.yml
+      - name: Run ansible-lint
+        run: ansible-lint
