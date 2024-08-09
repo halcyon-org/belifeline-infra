@@ -1,0 +1,10 @@
+---
+- name: subaru
+  hosts: subaru
+  roles:
+    - role: fedora
+      tags:
+        - fedora
+    - role: kubernetes
+      tags:
+        - kubernetes

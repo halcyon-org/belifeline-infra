@@ -1,0 +1,8 @@
+---
+- name: Make sysctl 50-k8s.conf
+  become: true
+  ansible.builtin.template:
+    src: 50-k8s.conf
+    dest: /etc/sysctl.d/50-k8s.conf
+    mode: "0644"
+  notify: Reboot

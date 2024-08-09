@@ -3,3 +3,5 @@
   import_playbook: vpnep.yml
 - name: PVE
   import_playbook: pve.yml
+- name: SUBARU
+  import_playbook: subaru.yml

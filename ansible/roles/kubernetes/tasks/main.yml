@@ -1,0 +1,25 @@
+---
+- name: Make cri-o.repo
+  become: true
+  ansible.builtin.template:
+    src: cri-o.repo
+    dest: /etc/yum.repos.d/cri-o.repo
+    mode: "0644"
+
+- name: Make kubernetes.repo
+  become: true
+  ansible.builtin.template:
+    src: kubernetes.repo
+    dest: /etc/yum.repos.d/kubernetes.repo
+    mode: "0644"
+
+- name: Install kubelet kubeadm kubectl
+  become: true
+  ansible.builtin.yum:
+    name:
+      - container-selinux
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+    disable_excludes: kubernetes

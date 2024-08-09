@@ -3,6 +3,10 @@ ProxyCommand cloudflared access ssh --hostname %h
 IdentityFile ~/.cloudflared/%h-cf_key
 CertificateFile ~/.cloudflared/%h-cf_key-cert.pub
 
-Host 192.168.30.*
+Host 192.168.30.3*
 IdentityFile ../private/cert/ssh/souzou.key
+ProxyCommand ssh -W %h:%p ansible_user@halcyon-srv.shiron.dev
+
+Host 192.168.30.10*
+IdentityFile ../private/cert/ssh/subaru.key
 ProxyCommand ssh -W %h:%p ansible_user@halcyon-srv.shiron.dev
