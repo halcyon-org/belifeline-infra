@@ -1,6 +1,7 @@
 set export
 
 ansible_default_opt := ""
+terraform_default_opt := ""
 
 default:
   @just --list
@@ -21,6 +22,8 @@ setup:
 
   cd ansible && ansible-galaxy install -r requirements.yml
 
+  cd terraform && terraform init
+
 auth:
   ssh -T -F ansible/ssh_config ansible_user@halcyon-srv.shiron.dev
 
@@ -30,11 +33,19 @@ ansible opt=ansible_default_opt: setup
 ansible-run opt=ansible_default_opt: setup
   cd ansible && ansible-playbook site.yml {{opt}}
 
+terraform opt=terraform_default_opt: setup
+  cd terraform && terraform plan {{opt}}
+
+terraform-apply opt=terraform_default_opt: setup
+  cd terraform && terraform apply {{opt}}
+
 lint:
   cd ansible && ansible-lint
+  cd terraform && terraform fmt -check -recursive
 
 lint-fix:
   cd ansible && ansible-lint --fix
+  cd terraform && terraform fmt -recursive
 
 onpre-gen:
   cd scripts/gen && just gen
