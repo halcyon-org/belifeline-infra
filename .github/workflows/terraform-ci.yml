@@ -9,7 +9,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./terraform
+    working-directory: terraform
 
 permissions:
   id-token: write
@@ -22,6 +22,12 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2.1.4
+        with:
+          workload_identity_provider: "projects/494673853308/locations/global/workloadIdentityPools/github-oidc-pool/providers/github-actions"
+          service_account: terraform@vaulted-zodiac-431004-s7.iam.gserviceaccount.com
       - uses: hashicorp/setup-terraform@v3.1.1
         with:
           terraform_version: 1.9.3

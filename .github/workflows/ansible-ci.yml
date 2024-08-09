@@ -12,7 +12,7 @@ permissions:
 
 defaults:
   run:
-    working-directory: ./ansible
+    working-directory: ansible
 
 jobs:
   ansible-lint:
