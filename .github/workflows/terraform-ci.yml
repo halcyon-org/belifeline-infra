@@ -61,13 +61,22 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const output = `#### Terraform Plan 📖\`${{ steps.plan.outputs.stdout }}\``;
+            const output = `#### Terraform Plan
+
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${{ steps.plan.outputs.stdout }}
+            \`\`\`
+            `;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: output
-            })
+            });
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
