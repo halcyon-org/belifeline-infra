@@ -5,6 +5,11 @@ terraform {
       version = "4.45.0"
     }
   }
+
+  backend "gcs" {
+    bucket = "vaulted-zodiac-431004-s7-tfstate"
+    prefix = "terraform/state"
+  }
 }
 
 provider "google" {
