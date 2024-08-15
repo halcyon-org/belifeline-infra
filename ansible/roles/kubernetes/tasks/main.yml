@@ -13,13 +13,89 @@
     dest: /etc/yum.repos.d/kubernetes.repo
     mode: "0644"
 
-- name: Install kubelet kubeadm kubectl
+- name: Install cri-o kubelet kubeadm kubectl
   become: true
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name:
-      - container-selinux
+      - cri-o
       - kubelet
       - kubeadm
       - kubectl
     state: present
     disable_excludes: kubernetes
+  notify:
+    - Restart crio
+
+- name: Enable kubelet
+  become: true
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: true
+
+- name: Mkdir /etc/crio/crio.conf.d
+  become: true
+  ansible.builtin.file:
+    path: /etc/crio/crio.conf.d
+    state: directory
+    mode: "0755"
+
+- name: Make /etc/crio/crio.conf.d/02-cgroup-manager.conf
+  become: true
+  ansible.builtin.template:
+    src: 02-cgroup-manager.conf
+    dest: /etc/crio/crio.conf.d/02-cgroup-manager.conf
+    mode: "0644"
+  notify:
+    - Restart crio
+
+- name: Make /etc/sysctl.d/99-kubernetes-cri.conf
+  become: true
+  ansible.builtin.template:
+    src: 99-kubernetes-cri.conf
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+    mode: "0644"
+  notify:
+    - Restart crio
+
+- name: Template init_task.service
+  become: true
+  ansible.builtin.template:
+    src: init_task.service
+    dest: /etc/systemd/system/init_task.service
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  notify: Enable init_task
+
+- name: Make init_task dir
+  become: true
+  ansible.builtin.file:
+    path: /var/init_task
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  notify: Enable init_task
+
+- name: Template startup.sh
+  become: true
+  ansible.builtin.template:
+    src: startup.sh
+    dest: /var/init_task/startup.sh
+    owner: root
+    group: root
+    mode: "0755"
+    backup: true
+  notify: Enable init_task
+
+- name: Template shutdown.sh
+  become: true
+  ansible.builtin.template:
+    src: shutdown.sh
+    dest: /var/init_task/shutdown.sh
+    owner: root
+    group: root
+    mode: "0755"
+    backup: true
+  notify: Enable init_task
