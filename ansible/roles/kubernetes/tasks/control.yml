@@ -1,0 +1,17 @@
+---
+- name: Check kubeadm status
+  become: true
+  ansible.builtin.command: kubeadm token list
+  failed_when: false
+  changed_when: false
+  register: kubeadm_status
+  when: "'control' in group_names"
+
+- name: Run kubeadm init
+  become: true
+  ansible.builtin.command: |
+    kubeadm init \
+      --pod-network-cidr=10.244.0.0/16 \
+      --ignore-preflight-errors=SystemVerification
+  changed_when: true
+  when: kubeadm_status is not skipped and kubeadm_status.rc != 0

@@ -1,0 +1,25 @@
+---
+- name: Check kubeadm status
+  become: true
+  ansible.builtin.command: kubeadm token list
+  failed_when: false
+  changed_when: false
+  register: kubeadm_status
+  when: "'worker' in group_names"
+
+- name: Run kubeadm token create in control plane
+  become: true
+  ansible.builtin.command: |
+    kubeadm token create --print-join-command
+  changed_when: false
+  register: kubeadm_token
+  when: kubeadm_status is not skipped and kubeadm_status.rc != 0
+  delegate_to: "{{ groups['control'][0] }}"
+
+- name: Run kubeadm join
+  become: true
+  ansible.builtin.command: |
+    {{ kubeadm_token.stdout | replace("192.168.30", "192.168.20") }} \
+      --ignore-preflight-errors=SystemVerification
+  changed_when: true
+  when: kubeadm_status is not skipped and kubeadm_status.rc != 0
