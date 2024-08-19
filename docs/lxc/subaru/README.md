@@ -45,6 +45,8 @@ lxc.mount.auto: proc:rw sys:rw
 
 ### 4. ターミナルに入る
 
+初期設定はユーザー`root`、パスワード`password`です。
+
 #### 4.1. sshd の設定
 
 ```bash
