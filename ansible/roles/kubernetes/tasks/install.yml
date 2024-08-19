@@ -21,6 +21,7 @@
       - kubelet
       - kubeadm
       - kubectl
+      - containernetworking-plugins
     state: present
     disable_excludes: kubernetes
   notify:
@@ -55,6 +56,17 @@
     dest: /etc/sysctl.d/99-kubernetes-cri.conf
     mode: "0644"
   notify:
+    - Load sysctl
+    - Restart crio
+
+- name: Make /etc/modules-load.d/k8s.conf
+  become: true
+  ansible.builtin.template:
+    src: k8s.conf
+    dest: /etc/modules-load.d/k8s.conf
+    mode: "0644"
+  notify:
+    - Load modules
     - Restart crio
 
 - name: Template init_task.service

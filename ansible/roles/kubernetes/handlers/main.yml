@@ -6,16 +6,38 @@
     state: reloaded
     enabled: true
 
-- name: Enable init_task
+- name: Systemctl enable init_task
+  listen: Enable init_task
   become: true
   ansible.builtin.systemd:
     name: init_task
     enabled: true
     state: started
     daemon_reload: true
-  notify: Reboot
 
-- name: Reboot
+- name: Run startup.sh
+  listen: Enable init_task
   become: true
-  ansible.builtin.reboot:
-    reboot_timeout: 300
+  ansible.builtin.command:
+    cmd: /var/init_task/startup.sh
+  changed_when: true
+
+- name: Load sysctl
+  become: true
+  ansible.builtin.command:
+    cmd: sysctl --system
+  changed_when: true
+
+- name: Load overlay module
+  listen: Load modules
+  become: true
+  ansible.builtin.command:
+    cmd: modprobe overlay
+  changed_when: true
+
+- name: Load br_netfilter module
+  listen: Load modules
+  become: true
+  ansible.builtin.command:
+    cmd: modprobe br_netfilter
+  changed_when: true
