@@ -6,4 +6,4 @@
 
 ## LXC
 
-- [subaru](./lxc/subaru.md)
+- [subaru](./lxc/subaru/README.md)
