@@ -5,6 +5,13 @@
     - role: fedora
       tags:
         - fedora
-    - role: kubernetes
+    - role: k8s_install
       tags:
         - kubernetes
+        - k8s
+        - k8s_install
+    - role: k8s_setup
+      tags:
+        - kubernetes
+        - k8s
+        - k8s_setup

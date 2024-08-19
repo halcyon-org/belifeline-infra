@@ -1,6 +1,4 @@
 ---
-# - name: Install kubernetes
-#   ansible.builtin.import_tasks: install.yml
 - name: Setup kubernetes control plane
   ansible.builtin.import_tasks: control.yml
 - name: Setup kubernetes worker nodes
