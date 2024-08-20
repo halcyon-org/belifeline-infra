@@ -1,11 +1,4 @@
 ---
-- name: Make cri-o.repo
-  become: true
-  ansible.builtin.template:
-    src: cri-o.repo
-    dest: /etc/yum.repos.d/cri-o.repo
-    mode: "0644"
-
 - name: Make kubernetes.repo
   become: true
   ansible.builtin.template:
@@ -13,19 +6,35 @@
     dest: /etc/yum.repos.d/kubernetes.repo
     mode: "0644"
 
-- name: Install cri-o kubelet kubeadm kubectl
+- name: Install kubelet kubeadm kubectl
   become: true
   ansible.builtin.dnf:
     name:
-      - cri-o
+      - containerd
       - kubelet
       - kubeadm
       - kubectl
       - containernetworking-plugins
     state: present
     disable_excludes: kubernetes
+
+- name: Mkdir /etc/continerd
+  become: true
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Make /etc/containerd/config.toml
+  become: true
+  ansible.builtin.template:
+    src: containerd-config.toml
+    dest: /etc/containerd/config.toml
+    mode: "0644"
   notify:
-    - Restart crio
+    - Restart containerd
 
 - name: Enable kubelet
   become: true
@@ -33,31 +42,14 @@
     name: kubelet
     enabled: true
 
-- name: Mkdir /etc/crio/crio.conf.d
-  become: true
-  ansible.builtin.file:
-    path: /etc/crio/crio.conf.d
-    state: directory
-    mode: "0755"
-
-- name: Make /etc/crio/crio.conf.d/02-cgroup-manager.conf
+- name: Make /etc/sysctl.d/99-kubernetes.conf
   become: true
   ansible.builtin.template:
-    src: 02-cgroup-manager.conf
-    dest: /etc/crio/crio.conf.d/02-cgroup-manager.conf
-    mode: "0644"
-  notify:
-    - Restart crio
-
-- name: Make /etc/sysctl.d/99-kubernetes-cri.conf
-  become: true
-  ansible.builtin.template:
-    src: 99-kubernetes-cri.conf
-    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+    src: 99-kubernetes.conf
+    dest: /etc/sysctl.d/99-kubernetes.conf
     mode: "0644"
   notify:
     - Load sysctl
-    - Restart crio
 
 - name: Make /etc/modules-load.d/k8s.conf
   become: true
@@ -67,7 +59,6 @@
     mode: "0644"
   notify:
     - Load modules
-    - Restart crio
 
 - name: Template init_task.service
   become: true
