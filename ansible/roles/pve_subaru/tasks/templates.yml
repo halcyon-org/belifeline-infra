@@ -1,0 +1,52 @@
+---
+- name: Download fedora qcow2
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ pve_subaru_fedora_url }}"
+    dest: /var/lib/vz/template/iso/Fedora-Cloud-Base-Generic.qcow2
+    mode: "0644"
+
+- name: Check templates
+  become: true
+  ansible.builtin.command: qm status {{ pve_subaru_template_vmid }}
+  failed_when: false
+  changed_when: false
+  register: qm_status
+
+- name: Create templates
+  become: true
+  ansible.builtin.command: |
+    qm create {{ pve_subaru_template_vmid }} --name subaru --memory 4096 --sockets 1 --cores 1
+    --scsihw virtio-scsi-pci
+  changed_when: true
+  when: qm_status.rc != 0
+
+- name: Set image
+  become: true
+  ansible.builtin.command: qm set {{ pve_subaru_template_vmid }} --scsi0 local-lvm:0,import-from=/var/lib/vz/template/iso/Fedora-Cloud-Base-Generic.qcow2
+  changed_when: true
+  when: qm_status.rc != 0
+
+- name: Add Cloudinit
+  become: true
+  ansible.builtin.command: qm set {{ pve_subaru_template_vmid }} --ide2 local-lvm:cloudinit
+  changed_when: true
+  when: qm_status.rc != 0
+
+- name: Set boot order
+  become: true
+  ansible.builtin.command: qm set {{ pve_subaru_template_vmid }} --boot order=scsi0
+  changed_when: true
+  when: qm_status.rc != 0
+
+- name: Add serial port
+  become: true
+  ansible.builtin.command: qm set {{ pve_subaru_template_vmid }} --serial0 socket --vga serial0
+  changed_when: true
+  when: qm_status.rc != 0
+
+- name: Convert to templates
+  become: true
+  ansible.builtin.command: qm template {{ pve_subaru_template_vmid }}
+  changed_when: true
+  when: qm_status.rc != 0

@@ -1,0 +1,6 @@
+---
+- name: Subaru templates
+  ansible.builtin.import_tasks: templates.yml
+  when: ansible_hostname == "souzou08"
+- name: Subaru cloudinit
+  ansible.builtin.import_tasks: cloudinit.yml

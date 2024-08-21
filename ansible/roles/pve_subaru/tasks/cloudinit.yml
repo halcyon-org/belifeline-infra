@@ -1,0 +1,8 @@
+---
+- name: Make cloudinit snippets
+  become: true
+  ansible.builtin.template:
+    src: subaru.yml
+    dest: /var/lib/vz/snippets/{{ item }}.yml
+    mode: "0755"
+  with_items: "{{ subaru_names }}"

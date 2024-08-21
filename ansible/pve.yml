@@ -16,3 +16,10 @@
     - role: pve_cron
       tags:
         - pve_cron
+
+- name: Pve subaru setup
+  hosts: pve_subaru
+  roles:
+    - role: pve_subaru
+      tags:
+        - pve_subaru

@@ -1,0 +1,3 @@
+---
+pve_subaru_fedora_url: https://ftp.riken.jp/Linux/fedora/releases/40/Cloud/x86_64/images/Fedora-Cloud-Base-Generic.x86_64-40-1.14.qcow2
+pve_subaru_template_vmid: 5000
