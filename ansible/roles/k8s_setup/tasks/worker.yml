@@ -19,7 +19,7 @@
 - name: Run kubeadm join
   become: true
   ansible.builtin.command: |
-    {{ kubeadm_token.stdout | replace("192.168.30", "192.168.20") }} \
+    {{ kubeadm_token.stdout | replace("192.168.30.101", "192.168.21.101") }} \
       --ignore-preflight-errors=SystemVerification
   changed_when: true
   when: kubeadm_status is not skipped and kubeadm_status.rc != 0
