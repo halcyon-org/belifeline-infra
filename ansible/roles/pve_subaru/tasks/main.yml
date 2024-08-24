@@ -4,3 +4,5 @@
   when: ansible_hostname == "souzou08"
 - name: Subaru cloudinit
   ansible.builtin.import_tasks: cloudinit.yml
+- name: Make subaru
+  ansible.builtin.import_tasks: subaru.yml

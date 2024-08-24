@@ -1,9 +1,9 @@
 ---
-- name: Download fedora qcow2
+- name: Download ubuntu qcow2
   become: true
   ansible.builtin.get_url:
-    url: "{{ pve_subaru_fedora_url }}"
-    dest: /var/lib/vz/template/iso/Fedora-Cloud-Base-Generic.qcow2
+    url: "{{ pve_subaru_ubuntu_url }}"
+    dest: /var/lib/vz/template/iso/ubuntu.img
     mode: "0644"
 
 - name: Check templates
@@ -16,20 +16,32 @@
 - name: Create templates
   become: true
   ansible.builtin.command: |
-    qm create {{ pve_subaru_template_vmid }} --name subaru --memory 4096 --sockets 1 --cores 1
+    qm create {{ pve_subaru_template_vmid }} --name subaru-base --memory 4096 --sockets 1 --cores 1
     --scsihw virtio-scsi-pci
   changed_when: true
   when: qm_status.rc != 0
 
 - name: Set image
   become: true
-  ansible.builtin.command: qm set {{ pve_subaru_template_vmid }} --scsi0 local-lvm:0,import-from=/var/lib/vz/template/iso/Fedora-Cloud-Base-Generic.qcow2
+  ansible.builtin.command: qm importdisk {{ pve_subaru_template_vmid }} /var/lib/vz/template/iso/ubuntu.img cephfs_rbd
+  changed_when: true
+  when: qm_status.rc != 0
+
+- name: Add disk
+  become: true
+  ansible.builtin.command: qm set {{ pve_subaru_template_vmid }} --scsihw virtio-scsi-pci --scsi0 cephfs_rbd:vm-{{ pve_subaru_template_vmid }}-disk-0
+  changed_when: true
+  when: qm_status.rc != 0
+
+- name: Resize disk
+  become: true
+  ansible.builtin.command: qm resize {{ pve_subaru_template_vmid }} scsi0 32G
   changed_when: true
   when: qm_status.rc != 0
 
 - name: Add Cloudinit
   become: true
-  ansible.builtin.command: qm set {{ pve_subaru_template_vmid }} --ide2 local-lvm:cloudinit
+  ansible.builtin.command: qm set {{ pve_subaru_template_vmid }} --ide2 cephfs_rbd:cloudinit
   changed_when: true
   when: qm_status.rc != 0
 
@@ -42,6 +54,12 @@
 - name: Add serial port
   become: true
   ansible.builtin.command: qm set {{ pve_subaru_template_vmid }} --serial0 socket --vga serial0
+  changed_when: true
+  when: qm_status.rc != 0
+
+- name: Set nameserver
+  become: true
+  ansible.builtin.command: qm set {{ pve_subaru_template_vmid }} --nameserver 192.168.30.1, 8.8.8.8
   changed_when: true
   when: qm_status.rc != 0
 

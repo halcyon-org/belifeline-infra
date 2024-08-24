@@ -1,3 +1,31 @@
 ---
-pve_subaru_fedora_url: https://ftp.riken.jp/Linux/fedora/releases/40/Cloud/x86_64/images/Fedora-Cloud-Base-Generic.x86_64-40-1.14.qcow2
 pve_subaru_template_vmid: 5000
+pve_subaru_ubuntu_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+pve_subaru_instance:
+  souzou08:
+    - name: subaru01
+      target_node: souzou08
+      subaru_network: subaru1
+      vmbr_macaddr: BC:24:11:EF:89:A6
+      vmid: 5001
+      vmbr_ip: "192.168.30.101/24"
+      subaru_ip: 192.168.21.101
+      subaru_gw: 192.168.21.1
+  souzou03:
+    - name: subaru02
+      target_node: souzou03
+      subaru_network: subaru2
+      vmbr_macaddr: BC:24:11:B8:41:7E
+      vmid: 5002
+      vmbr_ip: "192.168.30.102/24"
+      subaru_ip: 192.168.22.101
+      subaru_gw: 192.168.22.1
+  souzou04:
+    - name: subaru03
+      target_node: souzou04
+      subaru_network: subaru3
+      vmbr_macaddr: BC:24:11:3F:7E:0D
+      vmid: 5003
+      vmbr_ip: 192.168.30.103/24
+      subaru_ip: 192.168.23.101
+      subaru_gw: 192.168.23.1

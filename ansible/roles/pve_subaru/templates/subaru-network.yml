@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/canonical/cloud-init/main/cloudinit/config/schemas/schema-network-config-v1.json
+version: 1
+config:
+  - type: physical
+    name: ens18
+    subnets:
+      - type: dhcp
+  - type: physical
+    name: ens19
+    subnets:
+      - type: static
+        address: "{{ item.subaru_ip }}"
+        netmask: "255.255.255.0"
+        gateway: "{{ item.subaru_gw }}"
+  - type: nameserver
+    address:
+      - "192.168.133.65"
+    search:
+      - "halcyon"

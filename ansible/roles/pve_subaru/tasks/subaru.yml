@@ -1,0 +1,56 @@
+---
+- name: Check subaru
+  become: true
+  ansible.builtin.command: qm status {{ item.vmid }}
+  failed_when: false
+  changed_when: false
+  with_items: "{{ pve_subaru_instance[ansible_hostname] }}"
+  register: qm_status
+
+- name: Clone subaru
+  become: true
+  delegate_to: "{{ groups['souzou08'][0] }}"
+  ansible.builtin.command: |
+    qm clone {{ pve_subaru_template_vmid }} {{ item.vmid }} --target {{ item.target_node }}
+    --name {{ item.name }} --full --storage cephfs_rbd
+  changed_when: true
+  loop_control:
+    index_var: index
+  with_items: "{{ pve_subaru_instance[ansible_hostname] }}"
+  when: qm_status.results[index].rc != 0
+
+- name: Set net0
+  become: true
+  ansible.builtin.command: qm set {{ item.vmid }} --net0 virtio={{ item.vmbr_macaddr }},bridge=vmbr1
+  changed_when: true
+  loop_control:
+    index_var: index
+  with_items: "{{ pve_subaru_instance[ansible_hostname] }}"
+  when: qm_status.results[index].rc != 0
+
+- name: Set net1
+  become: true
+  ansible.builtin.command: qm set {{ item.vmid }} --net1 virtio,bridge={{ item.subaru_network }}
+  changed_when: true
+  loop_control:
+    index_var: index
+  with_items: "{{ pve_subaru_instance[ansible_hostname] }}"
+  when: qm_status.results[index].rc != 0
+
+- name: Set cloudinit cicustom
+  become: true
+  ansible.builtin.command: qm set {{ item.vmid }} --cicustom "user=cephfs:snippets/{{ item.name }}-user.yml,network=cephfs:snippets/{{ item.name }}-network.yml"
+  changed_when: true
+  loop_control:
+    index_var: index
+  with_items: "{{ pve_subaru_instance[ansible_hostname] }}"
+  when: qm_status.results[index].rc != 0
+
+- name: Start subaru
+  become: true
+  ansible.builtin.command: qm start {{ item.vmid }}
+  changed_when: true
+  loop_control:
+    index_var: index
+  with_items: "{{ pve_subaru_instance[ansible_hostname] }}"
+  when: qm_status.results[index].rc != 0

@@ -39,6 +39,9 @@ terraform opt=terraform_default_opt: setup
 terraform-apply opt=terraform_default_opt: setup
   cd terraform && terraform apply {{opt}}
 
+infracost: setup
+  cd terraform && infracost breakdown --path .
+
 lint:
   cd ansible && ansible-lint
   cd terraform && terraform fmt -check -recursive

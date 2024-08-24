@@ -1,8 +1,16 @@
 ---
-- name: Make cloudinit snippets
+- name: Make cloudinit user snippets
   become: true
   ansible.builtin.template:
-    src: subaru.yml
-    dest: /var/lib/vz/snippets/{{ item }}.yml
+    src: subaru-user.yml
+    dest: /mnt/pve/cephfs/snippets/{{ item.name }}-user.yml
     mode: "0755"
-  with_items: "{{ subaru_names }}"
+  with_items: "{{ pve_subaru_instance[ansible_hostname] }}"
+
+- name: Make cloudinit network snippets
+  become: true
+  ansible.builtin.template:
+    src: subaru-network.yml
+    dest: /mnt/pve/cephfs/snippets/{{ item.name }}-network.yml
+    mode: "0755"
+  with_items: "{{ pve_subaru_instance[ansible_hostname] }}"
