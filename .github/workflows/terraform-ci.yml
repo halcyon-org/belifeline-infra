@@ -28,7 +28,7 @@ jobs:
         with:
           workload_identity_provider: "projects/494673853308/locations/global/workloadIdentityPools/github-oidc-pool/providers/github-actions"
           service_account: terraform@vaulted-zodiac-431004-s7.iam.gserviceaccount.com
-      - uses: hashicorp/setup-terraform@v3.1.1
+      - uses: hashicorp/setup-terraform@v3.1.2
         with:
           terraform_version: 1.9.3
       - name: Terraform init
@@ -49,7 +49,7 @@ jobs:
         with:
           workload_identity_provider: "projects/494673853308/locations/global/workloadIdentityPools/github-oidc-pool/providers/github-actions"
           service_account: terraform@vaulted-zodiac-431004-s7.iam.gserviceaccount.com
-      - uses: hashicorp/setup-terraform@v3.1.1
+      - uses: hashicorp/setup-terraform@v3.1.2
       - name: Terraform init
         run: terraform init
       - name: Terraform plan
