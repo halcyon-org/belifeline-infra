@@ -44,8 +44,8 @@ resource "google_service_account_iam_member" "terraform_sa_workload_identity_use
 #   member  = "serviceAccount:${data.google_service_account.terraform_sa.email}"
 # }
 
-resource "google_project_iam_member" "shiron_sa_admin" {
+resource "google_project_iam_member" "shiron_iam_admin" {
   project = local.project_id
-  role    = "roles/iam.serviceAccountAdmin"
+  role    = "roles/iam.securityAdmin"
   member  = "user:${local.shiron_email}"
 }
