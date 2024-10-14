@@ -5,6 +5,10 @@ locals {
 }
 
 locals {
+  shiron_email = "shiron4710@gmail.com"
+}
+
+locals {
   terraform_sa = "terraform"
   repo_name    = "halcyon-org/belifeline-infra"
 }
