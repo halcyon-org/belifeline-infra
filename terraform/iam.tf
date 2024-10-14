@@ -32,8 +32,20 @@ resource "google_service_account_iam_member" "terraform_sa_workload_identity_use
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions_pool.name}/attribute.repository/${local.repo_name}"
 }
 
-resource "google_project_iam_member" "shiron_owner" {
+# resource "google_project_iam_member" "terraform_sa_run_admin" {
+#   project = local.project_id
+#   role    = "roles/run.admin"
+#   member  = "serviceAccount:${data.google_service_account.terraform_sa.email}"
+# }
+
+# resource "google_project_iam_member" "terraform_sa_run_invoker" {
+#   project = local.project_id
+#   role    = "roles/run.invoker"
+#   member  = "serviceAccount:${data.google_service_account.terraform_sa.email}"
+# }
+
+resource "google_project_iam_member" "shiron_sa_admin" {
   project = local.project_id
-  role    = "roles/owner"
+  role    = "roles/iam.serviceAccountAdmin"
   member  = "user:${local.shiron_email}"
 }
