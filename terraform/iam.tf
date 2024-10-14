@@ -31,3 +31,9 @@ resource "google_service_account_iam_member" "terraform_sa_workload_identity_use
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_actions_pool.name}/attribute.repository/${local.repo_name}"
 }
+
+resource "google_project_iam_member" "shiron_owner" {
+  project = local.project_id
+  role    = "roles/owner"
+  member  = "user:${local.shiron_email}"
+}
