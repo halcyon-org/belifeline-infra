@@ -1,0 +1,31 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  apply-terraform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: deploy
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2.1.5
+        with:
+          workload_identity_provider: "projects/494673853308/locations/global/workloadIdentityPools/github-oidc-pool/providers/github-actions"
+          service_account: terraform@vaulted-zodiac-431004-s7.iam.gserviceaccount.com
+      - uses: hashicorp/setup-terraform@v3.1.2
+      - name: Terraform init
+        run: terraform init
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
